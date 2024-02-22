@@ -5,10 +5,13 @@ import { cn } from "@/lib/utils";
 import localFont from "next/font/local";
 import { FcTodoList } from "react-icons/fc";
 import Lists from "./(_components)/lists";
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { FcAcceptDatabase } from "react-icons/fc";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import useCheckedModal from "../hooks/useCheckedModal";
+import Image from 'next/image';
+
 
 const headingFont = localFont({
   src: "../../../public/Fredoka/static/Fredoka-Medium.ttf",
@@ -18,35 +21,49 @@ const contentFont = localFont({
   src: "../../../public/Oxygen/Fredoka/static/Fredoka-Regular.ttf",
 });
 
+export const pageTitles = [
+  { title: "주방", content: ["재료 손질하기", "정리정돈 하기"] },
+  { title: "운동", content: ["스쿼트 3세트", "푸쉬업 5세트", "런닝 10분하기"] },
+  { title: "목표", content: ["매일 오후 7시 운동하기", "영양제 먹을 시간", "은행 가기", "집정리 하기"] },
+  { title: "지출", content: ["전공서적 구매하기", "계좌 내역 확인하기", "커피 2잔 구매하기"] }
+];
+
 const MainPage = () => {
   const [pageIndex, setPageIndex] = useState<number>(0);
-  const [checkedItems, setCheckedItems] = useState<boolean[]>([]);
-  
-  const pageTitles = [
-    { title: "주방", content: ["재료 손질하기", "정리정돈 하기"] },
-    { title: "운동", content: ["스쿼트 3세트", "푸쉬업 5세트", "런닝 10분하기"] },
-    { title: "목표", content: ["매일 오후 7시 운동하기", "영양제 먹을 시간", "은행 가기", "집정리 하기"] },
-    { title: "지출", content: ["전공서적 구매하기", "계좌 내역 확인하기", "커피 2잔 구매하기"] }
-  ];
+  const [checkedItems, setCheckedItems] = useState<boolean[][]>([]);
+  // const { checkedItems, setCheckedItems } = useCheckedModal();
+
+  const id = useId();
+
+  ;
+
+  useEffect(() => {
+    console.log("zustand states", checkedItems)
+  }, [checkedItems])
+
+  useEffect(() => {
+    // const initialCheckedItems = new Array(pageTitles[pageIndex].content.length).fill(false);
+    // setCheckedItems(initialCheckedItems);
+    const initialCheckedItems: boolean[][] = [];
+    pageTitles.forEach((page) => {
+      const pageCheckedItems = new Array(page.content.length).fill(false);
+      initialCheckedItems.push(pageCheckedItems);
+    });
+    setCheckedItems(initialCheckedItems);
+  }, [setCheckedItems]);
 
   const handleClick = (index: number) => {
     setPageIndex(index);
-    // 페이지가 변경될 때마다 체크리스트 초기화
-    setCheckedItems(new Array(pageTitles[index].content.length).fill(false));
   }
 
-  const handleToggleCheckbox = (index: number) => {
-    setCheckedItems(prevState => {
-      const newState = [...prevState];
-      newState[index] = !newState[index];
-      return newState;
-    });
-  }
-
-  useEffect(() => {
-    console.log(pageIndex)
-  })
-  
+  const playSound = (index: number) => {
+    const newCheckedItems = [...checkedItems];
+    newCheckedItems[pageIndex][index] = !newCheckedItems[pageIndex][index];
+    setCheckedItems(newCheckedItems);
+    let audioFile = checkedItems[index] ? "/tap-notification-180637.mp3" : "/pop-39222.mp3";
+    const audio = new Audio(audioFile);
+    audio.play();
+  };
 
   return (
     <main className="bg-slate-100 w-full h-full">
@@ -79,21 +96,26 @@ const MainPage = () => {
               pageTitles[pageIndex].content.map((item, index) => (
                 <div key={index}>
                   <div className="flex justify-start space-x-2 mb-5 mt-5">
-                    {/* <input 
-                      type="checkbox" 
-                      className="h-5 w-5 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
-                      checked={checkedItems[index]}
-                      onClick={() => handleToggleCheckbox(index)}
-                    /> */}
-                    <Checkbox id={`${pageIndex}-check`}/>
-                    <Label htmlFor={`${pageIndex}-check`}>{item}</Label>
+                    <Checkbox
+                      id={`${id}-${index}`} 
+                      checked={checkedItems[pageIndex] && checkedItems[pageIndex][index]}
+                      onClick={() => playSound(index)}
+                    />
+                    <Label id={`${id}-${index}`}>{item}</Label>
                   </div>
                   <hr className="w-full h-1 mt-4"/> 
                 </div>
               ))
             }
           </article>
-          <article className="w-1/4 h-9/10 bg-white rounded-xl p-3">ddd</article>
+          <article className="w-1/4 h-9/10 bg-white rounded-xl p-3 relative">
+            <Image
+              className="absolute inset-0 w-full h-full object-cover rounded-xl"
+              src={`/images/main-${pageIndex}.jpeg`} 
+              alt="image"
+              layout="fill"
+            />
+          </article>
         </div>
       </div>
     </main>
