@@ -6,7 +6,7 @@ const Header = () => {
       <Button variant="destructive" size="lg">
         Sign Up
       </Button>
-      <Button variant="outline" size="lg" className="bg-green">
+      <Button variant="outline" color="blue" size="lg" className="bg-green">
         Sign in
       </Button>
     </div>

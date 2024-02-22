@@ -32,14 +32,14 @@ const Lists = ({onClick}: ListsProps) => {
   return (
     <div className="flex flex-col w-full h-2/3 mx-auto mt-4">
       <div className="">
-        <h1 className="text-lg pl-3 pr-3">Lists</h1>
+        <h1 className="text-lg pl-5 pr-3">Lists</h1>
       </div>
       <div className="flex flex-col text-md w-full h-full cursor-pointer">
       {labelLists.map((item, index) => (
           <div
             key={index}
             onClick={() => handleClick(index)}
-            className={isActivated[index] ? "bg-neutral-100 pl-3 pr-3 pt-2 pb-2 hover:bg-neutral-100" : "bg-white pl-3 pr-3 pt-2 pb-2 hover:bg-neutral-100"}
+            className={isActivated[index] ? "bg-neutral-100 pl-5 pr-3 pt-2 pb-2 hover:bg-neutral-100" : "bg-white pl-5 pr-3 pt-2 pb-2 hover:bg-neutral-100"}
           >
             {item.icon}<span className="pl-3">{item.title}</span>
           </div>

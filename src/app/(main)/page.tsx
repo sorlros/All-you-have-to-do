@@ -9,8 +9,8 @@ import { useEffect, useId, useState } from "react";
 import { FcAcceptDatabase } from "react-icons/fc";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import useCheckedModal from "../hooks/useCheckedModal";
 import Image from 'next/image';
+import { Poppins } from "next/font/google";
 
 
 const headingFont = localFont({
@@ -20,6 +20,8 @@ const headingFont = localFont({
 const contentFont = localFont({
   src: "../../../public/Oxygen/Fredoka/static/Fredoka-Regular.ttf",
 });
+
+const poppins = Poppins({ subsets: ["latin"], weight: "500", style: "normal" });
 
 export const pageTitles = [
   { title: "주방", content: ["재료 손질하기", "정리정돈 하기"] },
@@ -31,19 +33,10 @@ export const pageTitles = [
 const MainPage = () => {
   const [pageIndex, setPageIndex] = useState<number>(0);
   const [checkedItems, setCheckedItems] = useState<boolean[][]>([]);
-  // const { checkedItems, setCheckedItems } = useCheckedModal();
 
   const id = useId();
 
-  ;
-
   useEffect(() => {
-    console.log("zustand states", checkedItems)
-  }, [checkedItems])
-
-  useEffect(() => {
-    // const initialCheckedItems = new Array(pageTitles[pageIndex].content.length).fill(false);
-    // setCheckedItems(initialCheckedItems);
     const initialCheckedItems: boolean[][] = [];
     pageTitles.forEach((page) => {
       const pageCheckedItems = new Array(page.content.length).fill(false);
@@ -60,7 +53,7 @@ const MainPage = () => {
     const newCheckedItems = [...checkedItems];
     newCheckedItems[pageIndex][index] = !newCheckedItems[pageIndex][index];
     setCheckedItems(newCheckedItems);
-    let audioFile = checkedItems[index] ? "/tap-notification-180637.mp3" : "/pop-39222.mp3";
+    let audioFile = checkedItems[pageIndex][index] ? "/tap-notification-180637.mp3" : "/pop-39222.mp3";
     const audio = new Audio(audioFile);
     audio.play();
   };
@@ -79,7 +72,7 @@ const MainPage = () => {
             </div>
           </h1>
         </div>
-        <div className={cn("flex space-x-4 w-full h-3/4 rounded-xl border-2 border-slate-200", contentFont.className)}>
+        <div className={cn("flex space-x-4 w-full h-3/4 rounded-xl border-2 border-slate-200", poppins.className)}>
           <article className="w-1/4 h-9/10 bg-white rounded-xl mx-auto">
             <div className="flex flex-wrap w-full h-1/3 gap-2 items-center justify-center mx-auto p-3">
               <div className="w-[46%] h-2/5 bg-neutral-100 rounded-xl" />
@@ -100,6 +93,7 @@ const MainPage = () => {
                       id={`${id}-${index}`} 
                       checked={checkedItems[pageIndex] && checkedItems[pageIndex][index]}
                       onClick={() => playSound(index)}
+                      className="mr-3"
                     />
                     <Label id={`${id}-${index}`}>{item}</Label>
                   </div>
@@ -111,9 +105,11 @@ const MainPage = () => {
           <article className="w-1/4 h-9/10 bg-white rounded-xl p-3 relative">
             <Image
               className="absolute inset-0 w-full h-full object-cover rounded-xl"
-              src={`/images/main-${pageIndex}.jpeg`} 
+              src={`/images/main-${pageIndex}.jpeg`}
               alt="image"
-              layout="fill"
+              priority
+              fill
+              sizes="(min-width: 60em) 24vw, (min-width: 28em) 45vw, 100vw"
             />
           </article>
         </div>
