@@ -1,6 +1,8 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import type { Metadata } from "next";
+// import "../../firebase-message"
+import Head from "next/head";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,6 +24,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko">
+      <Head>
+        <link rel='manifest' href='/manifest.json' />
+      </Head>
       <body className={inter.className}>{children}</body>
     </html>
   );

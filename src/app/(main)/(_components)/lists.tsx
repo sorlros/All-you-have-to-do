@@ -1,5 +1,6 @@
 "use client";
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useEffect, useState } from "react";
 
 interface ListsProps {
@@ -15,6 +16,7 @@ export const labelLists = [
 ]
 
 const Lists = ({onClick}: ListsProps) => {
+  const logged = false
   const [isActivated, setIsActivated] = useState<{[key: number]: boolean}>({})
 
   const handleClick = (index: number) => {
@@ -31,10 +33,10 @@ const Lists = ({onClick}: ListsProps) => {
 
   return (
     <div className="flex flex-col w-full h-2/3 mx-auto mt-4">
-      <div className="">
+      <div>
         <h1 className="text-lg pl-5 pr-3">Lists</h1>
       </div>
-      <div className="flex flex-col text-md w-full h-full cursor-pointer">
+      <div className="flex flex-col text-md w-full cursor-pointer mt-3">
       {labelLists.map((item, index) => (
           <div
             key={index}
@@ -44,8 +46,24 @@ const Lists = ({onClick}: ListsProps) => {
             {item.icon}<span className="pl-3">{item.title}</span>
           </div>
         ))}
+
+        {/* <div className="flex flex-col justify-center">
+          <div className="w-[90%] h-1/5 bg-neutral-100 rounded-xl pl-5" />
+            {logged ? (
+              <Avatar className="justify-end">
+                <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>
+              ) : (
+              <Avatar className="justify-end">
+                <AvatarImage src="https://github.com/shadcn.png" alt="user" />
+                <AvatarFallback>USER</AvatarFallback>
+              </Avatar>
+              )}
+          </div>
+        </div> */}
       </div>
-    </div>
+    </div> 
   )
 }
 

@@ -58,6 +58,20 @@ const MainPage = () => {
     audio.play();
   };
 
+  const sendMessage = async () => {
+    let permission = await Notification.requestPermission();
+  if (permission === "granted") {
+    console.log("Notification permission granted. Requesting for token.");
+    let token = await messaging.getToken({
+      vapidKey: "<YOUR_PUBLIC_VAPID_KEY_HERE>",
+    });
+    // do something with the FCM token
+  } else {
+    console.log("Notification permission denied");
+    // Handle denied permission
+  }
+  }
+
   return (
     <main className="bg-slate-100 w-full h-full">
       <div className="bg-slate-100 flex flex-col max-w-6xl h-full mx-auto">
@@ -75,7 +89,7 @@ const MainPage = () => {
         <div className={cn("flex space-x-4 w-full h-3/4 rounded-xl border-2 border-slate-200", poppins.className)}>
           <article className="w-1/4 h-9/10 bg-white rounded-xl mx-auto">
             <div className="flex flex-wrap w-full h-1/3 gap-2 items-center justify-center mx-auto p-3">
-              <div className="w-[46%] h-2/5 bg-neutral-100 rounded-xl" />
+              <div className="w-[46%] h-2/5 bg-neutral-100 rounded-xl"></div>
               <div className="w-[46%] h-2/5 bg-neutral-100 rounded-xl" />
               <div className="w-[46%] h-2/5 bg-neutral-100 rounded-xl" />
               <div className="w-[46%] h-2/5 bg-neutral-100 rounded-xl" />
