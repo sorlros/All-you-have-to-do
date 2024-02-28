@@ -12,13 +12,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 import Image from 'next/image';
 import { Poppins } from "next/font/google";
 
-import { getMessaging, getToken } from 'firebase/messaging'; // 변경된 부분
+import { getMessaging, getToken, onMessage } from 'firebase/messaging'; // 변경된 부분
 import firebase, {initializeApp} from 'firebase/app';
-// import dotenv from "dotenv"
-// import getConfig from 'next/config';
 
-// dotenv.config();
-// const { env } = getConfig();
+// import firebase from "firebase/compat/app";
+import "firebase/compat/messaging";
 
 const headingFont = localFont({
   src: "../../../public/Fredoka/static/Fredoka-Medium.ttf",
@@ -39,19 +37,19 @@ const Page = () => {
 
   const id = useId();
 
-  function requestPermission() {
-    console.log('Requesting permission...');
-    Notification.requestPermission().then((permission) => {
-      if (permission === 'granted') {
-        console.log('Notification permission granted.');
-      } else {
-        console.log("허가를 받지 못했습니다.")
-      }
-  })}
+  // async function requestPermission() {
+  //   console.log('Requesting permission...');
+  //   await Notification.requestPermission().then((permission) => {
+  //     if (permission === 'granted') {
+  //       console.log('Notification permission granted.');
+  //     } else {
+  //       console.log("허가를 받지 못했습니다.")
+  //     }
+  //   };
+  //     requestPermission()
+  // )};
   
-  useEffect(() => {
-    requestPermission();
-    
+  useEffect(() => {    
     const firebaseConfig = {
       apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
       authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -64,7 +62,7 @@ const Page = () => {
     
     const app = initializeApp(firebaseConfig);
     const messaging = getMessaging(app);
-
+    
     getToken(messaging, { vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY }).then((currentToken) => {
       if (currentToken) {
         console.log("토큰존재", currentToken)
@@ -77,6 +75,22 @@ const Page = () => {
       console.log('An error occurred while retrieving token. ', err);
       // ...
     });
+
+    // messaging.onMessage((payload) => {
+    //   console.log('Message received. ', payload);
+    //   // 수신된 메시지를 상태에 추가
+    //   setMessages((prevMessages) => [...prevMessages, payload]);
+    // });
+
+    const requestPermission = async () => {
+      try {
+        await Notification.requestPermission();
+        console.log("Notification permission granted.")
+      } catch (error) {
+        console.log("Notification denied for notification.")
+      }
+    }
+    requestPermission();
   }, [])
 
     
