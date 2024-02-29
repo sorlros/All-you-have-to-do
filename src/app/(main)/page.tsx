@@ -14,6 +14,7 @@ import { Poppins } from "next/font/google";
 
 import { getMessaging, getToken, onMessage } from 'firebase/messaging'; // 변경된 부분
 import firebase, {initializeApp} from 'firebase/app';
+import { getAuth } from "firebase/auth";
 
 // import firebase from "firebase/compat/app";
 import "firebase/compat/messaging";
@@ -37,18 +38,6 @@ const Page = () => {
 
   const id = useId();
 
-  // async function requestPermission() {
-  //   console.log('Requesting permission...');
-  //   await Notification.requestPermission().then((permission) => {
-  //     if (permission === 'granted') {
-  //       console.log('Notification permission granted.');
-  //     } else {
-  //       console.log("허가를 받지 못했습니다.")
-  //     }
-  //   };
-  //     requestPermission()
-  // )};
-  
   useEffect(() => {    
     const firebaseConfig = {
       apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -62,6 +51,8 @@ const Page = () => {
     
     const app = initializeApp(firebaseConfig);
     const messaging = getMessaging(app);
+    const auth = getAuth(app)
+    console.log("auth", auth)
     
     getToken(messaging, { vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY }).then((currentToken) => {
       if (currentToken) {
