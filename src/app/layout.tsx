@@ -1,8 +1,9 @@
+
 import { Inter } from "next/font/google";
 import "./globals.css";
 import type { Metadata } from "next";
 import Head from "next/head";
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,6 +19,7 @@ export const metadata: Metadata = {
 };
 
 const Layout = ({children}: {children: ReactNode}) => {
+
   return (
     <html lang="ko">
       <Head>

@@ -10,17 +10,17 @@
 // const {onRequest} = require("firebase-functions/v2/https");
 // const logger = require("firebase-functions/logger");
 
-const functions = require("firebase-functions");
-const admin = require("firebase-admin");
+// const functions = require("firebase-functions");
+// const admin = require("firebase-admin");
 
-const serviceAccount = require("/serviceAccountKey.json");
+// const serviceAccount = require("/serviceAccountKey.json");
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
+// admin.initializeApp({
+//   credential: admin.credential.cert(serviceAccount),
+// });
 
-const tokensSnapshot = await admin.firestore().collection("tokens").get();
-const tokens = tokensSnapshot.docs.map((doc) => doc.data().token);
+// const tokensSnapshot = await admin.firestore().collection("tokens").get();
+// const tokens = tokensSnapshot.docs.map((doc) => doc.data().token);
 
 // router.post('/push', (req,res,next)=>{
 //   const query = req.query;

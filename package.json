@@ -37,5 +37,8 @@
     "tailwindcss-animate": "^1.0.7",
     "typescript": "5.3.3",
     "zustand": "^4.5.1"
+  },
+  "devDependencies": {
+    "@types/firebase": "^3.2.1"
   }
 }

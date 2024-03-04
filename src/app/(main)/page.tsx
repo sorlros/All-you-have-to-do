@@ -13,11 +13,11 @@ import Image from 'next/image';
 import { Poppins } from "next/font/google";
 
 import { getMessaging, getToken, onMessage } from 'firebase/messaging'; // 변경된 부분
-import firebase, {initializeApp} from 'firebase/app';
-import { getAuth } from "firebase/auth";
+import { initializeApp } from 'firebase/app';
+import { getAuth, initializeAuth } from "firebase/auth";
 
-// import firebase from "firebase/compat/app";
 import "firebase/compat/messaging";
+import { firebaseConfig } from "@/config/firebase-config";
 
 const headingFont = localFont({
   src: "../../../public/Fredoka/static/Fredoka-Medium.ttf",
@@ -32,57 +32,53 @@ const pageTitles = [
   { title: "지출", content: ["전공서적 구매하기", "계좌 내역 확인하기", "커피 2잔 구매하기"] }
 ];
 
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
 const Page = () => {
   const [pageIndex, setPageIndex] = useState<number>(0);
   const [checkedItems, setCheckedItems] = useState<boolean[][]>([]);
 
   const id = useId();
 
-  useEffect(() => {    
-    const firebaseConfig = {
-      apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-      authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-      projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-      storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-      messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-      appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-      measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
-    };
-    
-    const app = initializeApp(firebaseConfig);
-    const messaging = getMessaging(app);
-    const auth = getAuth(app)
-    console.log("auth", auth)
-    
-    getToken(messaging, { vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY }).then((currentToken) => {
-      if (currentToken) {
-        console.log("토큰존재", currentToken)
-      } else {
-        // Show permission request UI
-        console.log('No registration token available. Request permission to generate one.');
-        // ...
-      }
-        }).catch((err) => {
-      console.log('An error occurred while retrieving token. ', err);
-      // ...
-    });
+  // useEffect(() => {    
+  //   const app = initializeApp(firebaseConfig);
+  //   const messaging = getMessaging(app);
+  //   const auth = getAuth();
+  //   console.log("auth", auth);
+  //   console.log("name", auth.currentUser);
 
-    // messaging.onMessage((payload) => {
-    //   console.log('Message received. ', payload);
-    //   // 수신된 메시지를 상태에 추가
-    //   setMessages((prevMessages) => [...prevMessages, payload]);
-    // });
+  //   getToken(messaging, { vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY }).then((currentToken) => {
+  //     if (currentToken) {
+  //       console.log("토큰존재", currentToken)
+  //     } else {
+  //       // Show permission request UI
+  //       console.log('No registration token available. Request permission to generate one.');
+  //       // ...
+  //     }
+  //       }).catch((err) => {
+  //     console.log('An error occurred while retrieving token. ', err);
+  //     // ...
+  //   });
 
-    const requestPermission = async () => {
-      try {
-        await Notification.requestPermission();
-        console.log("Notification permission granted.")
-      } catch (error) {
-        console.log("Notification denied for notification.")
-      }
-    }
-    requestPermission();
-  }, [])
+  //   // messaging.onMessage((payload) => {
+  //   //   console.log('Message received. ', payload);
+  //   //   // 수신된 메시지를 상태에 추가
+  //   //   setMessages((prevMessages) => [...prevMessages, payload]);
+  //   // });
+
+  //   const requestPermission = async () => {
+  //     try {
+  //       await Notification.requestPermission();
+  //       console.log("Notification permission granted.")
+  //     } catch (error) {
+  //       console.log("Notification denied for notification.")
+  //     }
+  //   }
+
+  //   requestPermission();
+  // }, [])
 
     
   
