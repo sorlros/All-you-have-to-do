@@ -10,5 +10,9 @@ const withPWA = require('next-pwa')({
   // runtimeCaching,
 });
 
-const nextConfig = withPWA({});
+const nextConfig = withPWA({
+  images: {
+    domains: ['lh3.googleusercontent.com'],
+  }
+});
 module.exports = nextConfig;

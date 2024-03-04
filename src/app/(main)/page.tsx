@@ -34,11 +34,12 @@ const pageTitles = [
 
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
 
 const Page = () => {
   const [pageIndex, setPageIndex] = useState<number>(0);
   const [checkedItems, setCheckedItems] = useState<boolean[][]>([]);
+
+  const auth = getAuth(app);
 
   const id = useId();
 
@@ -109,7 +110,7 @@ const Page = () => {
     <main className="bg-slate-100 w-full h-full">
       <div className="bg-slate-100 flex flex-col max-w-6xl h-full mx-auto">
         <header>
-          <Header />
+          <Header auth={auth} />
         </header>
         <div className={cn("flex justify-center mt-4 mb-4", headingFont.className)}>
           <h1 className="text-4xl">

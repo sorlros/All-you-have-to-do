@@ -19,7 +19,6 @@ export const metadata: Metadata = {
 };
 
 const Layout = ({children}: {children: ReactNode}) => {
-
   return (
     <html lang="ko">
       <Head>
