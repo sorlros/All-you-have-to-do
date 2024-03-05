@@ -1,7 +1,7 @@
 "use client";
 
 import Header from "@/components/header";
-import { cn } from "@/lib/utils";
+import { cn } from "@/libs/utils";
 import localFont from "next/font/local";
 import { FcTodoList } from "react-icons/fc";
 import Lists from "./(_components)/lists";
@@ -9,11 +9,11 @@ import { useEffect, useId, useState } from "react";
 import { FcAcceptDatabase } from "react-icons/fc";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import Image from 'next/image';
+import Image from "next/image";
 import { Poppins } from "next/font/google";
 
-import { getMessaging, getToken, onMessage } from 'firebase/messaging'; // 변경된 부분
-import { initializeApp } from 'firebase/app';
+import { getMessaging, getToken, onMessage } from "firebase/messaging"; // 변경된 부분
+import { initializeApp } from "firebase/app";
 import { getAuth, initializeAuth } from "firebase/auth";
 
 import "firebase/compat/messaging";
@@ -28,10 +28,20 @@ const poppins = Poppins({ subsets: ["latin"], weight: "500", style: "normal" });
 const pageTitles = [
   { title: "주방", content: ["재료 손질하기", "정리정돈 하기"] },
   { title: "운동", content: ["스쿼트 3세트", "푸쉬업 5세트", "런닝 10분하기"] },
-  { title: "목표", content: ["매일 오후 7시 운동하기", "영양제 먹을 시간", "은행 가기", "집정리 하기"] },
-  { title: "지출", content: ["전공서적 구매하기", "계좌 내역 확인하기", "커피 2잔 구매하기"] }
+  {
+    title: "목표",
+    content: [
+      "매일 오후 7시 운동하기",
+      "영양제 먹을 시간",
+      "은행 가기",
+      "집정리 하기",
+    ],
+  },
+  {
+    title: "지출",
+    content: ["전공서적 구매하기", "계좌 내역 확인하기", "커피 2잔 구매하기"],
+  },
 ];
-
 
 const app = initializeApp(firebaseConfig);
 
@@ -43,7 +53,7 @@ const Page = () => {
 
   const id = useId();
 
-  // useEffect(() => {    
+  // useEffect(() => {
   //   const app = initializeApp(firebaseConfig);
   //   const messaging = getMessaging(app);
   //   const auth = getAuth();
@@ -81,9 +91,6 @@ const Page = () => {
   //   requestPermission();
   // }, [])
 
-    
-  
-
   useEffect(() => {
     const initialCheckedItems: boolean[][] = [];
     pageTitles.forEach((page) => {
@@ -95,13 +102,15 @@ const Page = () => {
 
   const handleClick = (index: number) => {
     setPageIndex(index);
-  }
+  };
 
   const playSound = (index: number) => {
     const newCheckedItems = [...checkedItems];
     newCheckedItems[pageIndex][index] = !newCheckedItems[pageIndex][index];
     setCheckedItems(newCheckedItems);
-    let audioFile = checkedItems[pageIndex][index] ? "/tap-notification-180637.mp3" : "/pop-39222.mp3";
+    let audioFile = checkedItems[pageIndex][index]
+      ? "/tap-notification-180637.mp3"
+      : "/pop-39222.mp3";
     const audio = new Audio(audioFile);
     audio.play();
   };
@@ -112,15 +121,25 @@ const Page = () => {
         <header>
           <Header auth={auth} />
         </header>
-        <div className={cn("flex justify-center mt-4 mb-4", headingFont.className)}>
+        <div
+          className={cn("flex justify-center mt-4 mb-4", headingFont.className)}
+        >
           <h1 className="text-4xl">
             <div className="text-6xl">All you</div>
-            <br /> 
-            <div className="flex items-center ml-24 -mt-6">have to <h2 className="ml-2 text-purple-600">do</h2> <FcTodoList className="text-4xl ml-3" />
+            <br />
+            <div className="flex items-center ml-24 -mt-6">
+              have to
+              <h2 className="ml-2 text-purple-600">do</h2>
+              <FcTodoList className="text-4xl ml-3" />
             </div>
           </h1>
         </div>
-        <div className={cn("flex space-x-4 w-full h-3/4 rounded-xl border-2 border-slate-200", poppins.className)}>
+        <div
+          className={cn(
+            "flex space-x-4 w-full h-3/4 rounded-xl",
+            poppins.className,
+          )}
+        >
           <article className="w-1/4 h-9/10 bg-white rounded-xl mx-auto">
             <div className="flex flex-wrap w-full h-1/3 gap-2 items-center justify-center mx-auto p-3">
               <div className="w-[46%] h-2/5 bg-neutral-100 rounded-xl"></div>
@@ -128,27 +147,27 @@ const Page = () => {
               <div className="w-[46%] h-2/5 bg-neutral-100 rounded-xl" />
               <div className="w-[46%] h-2/5 bg-neutral-100 rounded-xl" />
             </div>
-            <Lists onClick={(index) => handleClick(index)}/>
+            <Lists onClick={(index) => handleClick(index)} />
           </article>
           <article className="w-2/4 h-9/10 bg-white rounded-xl p-9 pl-8">
             <FcAcceptDatabase size="50px" />
             <h1 className="text-xl">{pageTitles[pageIndex].title}</h1>
-            {
-              pageTitles[pageIndex].content.map((item, index) => (
-                <div key={index}>
-                  <div className="flex justify-start space-x-2 mb-5 mt-5">
-                    <Checkbox
-                      id={`${id}-${index}`} 
-                      checked={checkedItems[pageIndex] && checkedItems[pageIndex][index]}
-                      onClick={() => playSound(index)}
-                      className="mr-3"
-                    />
-                    <Label id={`${id}-${index}`}>{item}</Label>
-                  </div>
-                  <hr className="w-full h-1 mt-4"/> 
+            {pageTitles[pageIndex].content.map((item, index) => (
+              <div key={index}>
+                <div className="flex justify-start space-x-2 mb-5 mt-5">
+                  <Checkbox
+                    id={`${id}-${index}`}
+                    checked={
+                      checkedItems[pageIndex] && checkedItems[pageIndex][index]
+                    }
+                    onClick={() => playSound(index)}
+                    className="mr-3"
+                  />
+                  <Label id={`${id}-${index}`}>{item}</Label>
                 </div>
-              ))
-            }
+                <hr className="w-full h-1 mt-4" />
+              </div>
+            ))}
           </article>
           <article className="w-1/4 h-9/10 bg-white rounded-xl p-3 relative">
             <Image
