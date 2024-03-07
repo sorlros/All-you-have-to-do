@@ -2,10 +2,15 @@
 
 import { Button } from "@/components/ui/button";
 import { Auth, onAuthStateChanged } from "firebase/auth";
-import { signInAnony, signInWithGoogle, signOut } from "@/libs/firebase/auth";
+import {
+  signInAnonymous,
+  signInWithGoogle,
+  signOut,
+} from "@/libs/firebase/auth";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { FcGoogle } from "react-icons/fc";
+import { UserInfoProps, createUser } from "@/libs/db/user";
 interface HeaderProps {
   auth: Auth;
 }
@@ -14,11 +19,40 @@ const Header = ({ auth }: HeaderProps) => {
   const [userId, setUserId] = useState(auth?.currentUser?.displayName);
   const [userPhoto, setUserPhoto] = useState<string | null>("");
   const [uid, setUid] = useState<string>("");
+  const [userInfo, setUserInfo] = useState<UserInfoProps>({
+    displayName: "",
+    email: "",
+    uid: "",
+  });
 
   const handleAnonymous = async () => {
-    await signInAnony();
+    await signInAnonymous();
     setUserId("익명의 사용자");
     setUserPhoto("/images/anonymous.png");
+  };
+
+  const handleSignInWithGoogle = async () => {
+    try {
+      const credential = await signInWithGoogle();
+      if (credential) {
+        const user = credential.user;
+        const userInfo = {
+          displayName: user.displayName,
+          email: user.email,
+          uid: user.uid,
+        };
+        setUserInfo(userInfo);
+        const result = await createUser(userInfo);
+        // console.log("result", result);
+      }
+    } catch (error) {
+      console.error(error);
+      setUserInfo({
+        displayName: "",
+        email: "",
+        uid: "",
+      });
+    }
   };
 
   useEffect(() => {
@@ -27,17 +61,26 @@ const Header = ({ auth }: HeaderProps) => {
       if (user) {
         // 사용자가 로그인한 경우, user 객체를 통해 사용자 정보에 접근할 수 있습니다.
         console.log("user", user);
+        // console.log("auth", auth);
+
+        // console.log("auth.currentUser", auth.currentUser);
 
         setUserId(user.displayName);
         setUid(user.uid);
         setUserPhoto(user.photoURL);
-        console.log(uid);
+        console.log("로그인 성공");
+        // console.log(uid);
       } else {
         // 사용자가 로그아웃한 경우 또는 인증되지 않은 경우
         console.log("User is signed out");
         setUserId(null);
         setUserPhoto(null);
         setUid("");
+        setUserInfo({
+          displayName: "",
+          email: "",
+          uid: "",
+        });
       }
     });
     // cleanup 함수를 반환하여 컴포넌트가 언마운트될 때 구독을 해제합니다.
@@ -46,7 +89,7 @@ const Header = ({ auth }: HeaderProps) => {
 
   return (
     <div className="w-full h-[50px] flex justify-end items-center gap-2 p-5 pt-10">
-      {userId ? (
+      {uid !== "" ? (
         <>
           {userPhoto && (
             <>
@@ -71,7 +114,7 @@ const Header = ({ auth }: HeaderProps) => {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => signInWithGoogle()}
+              onClick={() => handleSignInWithGoogle()}
             >
               Google로 로그인
             </Button>

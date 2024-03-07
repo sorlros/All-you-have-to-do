@@ -1,13 +1,18 @@
-import { GoogleAuthProvider, getAuth, signInWithPopup, signInAnonymously } from "firebase/auth";
+import {
+  GoogleAuthProvider,
+  getAuth,
+  signInWithPopup,
+  signInAnonymously,
+} from "firebase/auth";
 
 export async function signInWithGoogle() {
   const provider = new GoogleAuthProvider();
   const auth = getAuth();
 
-  try { 
+  try {
     return await signInWithPopup(auth, provider);
   } catch (error) {
-          console.error("Error signing in with Google", error);
+    console.error("Error signing in with Google", error);
   }
 }
 
@@ -21,12 +26,12 @@ export async function signOut() {
   }
 }
 
-export async function signInAnony() {
+export async function signInAnonymous() {
   const auth = getAuth();
 
   try {
-    await signInAnonymously(auth);
+    return await signInAnonymously(auth);
   } catch (error) {
-    console.error(error)
+    console.error(error);
   }
 }

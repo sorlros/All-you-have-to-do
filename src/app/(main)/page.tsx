@@ -49,10 +49,13 @@ const Page = () => {
   const [pageIndex, setPageIndex] = useState<number>(0);
   const [checkedItems, setCheckedItems] = useState<boolean[][]>([]);
 
-  const auth = getAuth(app);
+  const auth = getAuth();
 
   const id = useId();
 
+  useEffect(() => {
+    const auth = getAuth(app);
+  }, []);
   // useEffect(() => {
   //   const app = initializeApp(firebaseConfig);
   //   const messaging = getMessaging(app);
