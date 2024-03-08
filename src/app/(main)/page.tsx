@@ -13,11 +13,13 @@ import Image from "next/image";
 import { Poppins } from "next/font/google";
 
 import { getMessaging, getToken, onMessage } from "firebase/messaging"; // 변경된 부분
-import { initializeApp } from "firebase/app";
-import { getAuth, initializeAuth } from "firebase/auth";
-
+import { getApps, initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
 import "firebase/compat/messaging";
 import { firebaseConfig } from "@/config/firebase-config";
+import * as admin from "firebase-admin";
+
+import serviceAccount from "../../../serviceAccountKey.json";
 
 const headingFont = localFont({
   src: "../../../public/Fredoka/static/Fredoka-Medium.ttf",
@@ -43,19 +45,14 @@ const pageTitles = [
   },
 ];
 
-const app = initializeApp(firebaseConfig);
+getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 
 const Page = () => {
   const [pageIndex, setPageIndex] = useState<number>(0);
   const [checkedItems, setCheckedItems] = useState<boolean[][]>([]);
 
-  const auth = getAuth();
-
   const id = useId();
 
-  useEffect(() => {
-    const auth = getAuth(app);
-  }, []);
   // useEffect(() => {
   //   const app = initializeApp(firebaseConfig);
   //   const messaging = getMessaging(app);
@@ -94,6 +91,19 @@ const Page = () => {
   //   requestPermission();
   // }, [])
 
+  // useEffect(() => {
+  //   const requestPermission = async () => {
+  //     try {
+  //       await Notification.requestPermission();
+  //       console.log("Notification permission granted.");
+  //     } catch (error) {
+  //       console.log("Notification denied for notification.");
+  //     }
+  //   };
+
+  //   requestPermission();
+  // }, []);
+
   useEffect(() => {
     const initialCheckedItems: boolean[][] = [];
     pageTitles.forEach((page) => {
@@ -118,11 +128,33 @@ const Page = () => {
     audio.play();
   };
 
+  const sendMessage = () => {
+    const title = "타이틀";
+    const body = "바디";
+    // const icon = "";
+    const options = { body };
+
+    new Notification(title, options);
+  };
+
+  const btnClickHandler = async () => {
+    try {
+      const result = await Notification.requestPermission();
+      if (result === "granted") {
+        sendMessage();
+      } else {
+        console.log("알림 권한이 거부되었습니다.");
+      }
+    } catch (error) {
+      console.error("알림 권한을 요청하는 동안 오류가 발생했습니다.", error);
+    }
+  };
+
   return (
     <main className="bg-slate-100 w-full h-full">
       <div className="bg-slate-100 flex flex-col max-w-6xl h-full mx-auto">
         <header>
-          <Header auth={auth} />
+          <Header />
         </header>
         <div
           className={cn("flex justify-center mt-4 mb-4", headingFont.className)}
@@ -151,6 +183,7 @@ const Page = () => {
               <div className="w-[46%] h-2/5 bg-neutral-100 rounded-xl" />
             </div>
             <Lists onClick={(index) => handleClick(index)} />
+            <button onClick={btnClickHandler}>알림 보내기</button>
           </article>
           <article className="w-2/4 h-9/10 bg-white rounded-xl p-9 pl-8">
             <FcAcceptDatabase size="50px" />

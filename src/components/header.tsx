@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Auth, onAuthStateChanged } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import {
   signInAnonymous,
   signInWithGoogle,
@@ -11,12 +11,11 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { FcGoogle } from "react-icons/fc";
 import { UserInfoProps, createUser } from "@/libs/db/user";
-interface HeaderProps {
-  auth: Auth;
-}
 
-const Header = ({ auth }: HeaderProps) => {
-  const [userId, setUserId] = useState(auth?.currentUser?.displayName);
+const Header = () => {
+  const auth = getAuth();
+
+  const [userId, setUserId] = useState<string | null>("");
   const [userPhoto, setUserPhoto] = useState<string | null>("");
   const [uid, setUid] = useState<string>("");
   const [userInfo, setUserInfo] = useState<UserInfoProps>({
