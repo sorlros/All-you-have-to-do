@@ -1,6 +1,5 @@
 "use client";
 
-import Header from "@/components/header";
 import { cn } from "@/libs/utils";
 import localFont from "next/font/local";
 import { FcTodoList } from "react-icons/fc";
@@ -20,6 +19,8 @@ import { firebaseConfig } from "@/config/firebase-config";
 import * as admin from "firebase-admin";
 
 import serviceAccount from "../../../serviceAccountKey.json";
+import Header from "./(_components)/header";
+import UserPage from "./(logged)/page";
 
 const headingFont = localFont({
   src: "../../../public/Fredoka/static/Fredoka-Medium.ttf",
@@ -52,57 +53,7 @@ const Page = () => {
   const [checkedItems, setCheckedItems] = useState<boolean[][]>([]);
 
   const id = useId();
-
-  // useEffect(() => {
-  //   const app = initializeApp(firebaseConfig);
-  //   const messaging = getMessaging(app);
-  //   const auth = getAuth();
-  //   console.log("auth", auth);
-  //   console.log("name", auth.currentUser);
-
-  //   getToken(messaging, { vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY }).then((currentToken) => {
-  //     if (currentToken) {
-  //       console.log("토큰존재", currentToken)
-  //     } else {
-  //       // Show permission request UI
-  //       console.log('No registration token available. Request permission to generate one.');
-  //       // ...
-  //     }
-  //       }).catch((err) => {
-  //     console.log('An error occurred while retrieving token. ', err);
-  //     // ...
-  //   });
-
-  //   // messaging.onMessage((payload) => {
-  //   //   console.log('Message received. ', payload);
-  //   //   // 수신된 메시지를 상태에 추가
-  //   //   setMessages((prevMessages) => [...prevMessages, payload]);
-  //   // });
-
-  //   const requestPermission = async () => {
-  //     try {
-  //       await Notification.requestPermission();
-  //       console.log("Notification permission granted.")
-  //     } catch (error) {
-  //       console.log("Notification denied for notification.")
-  //     }
-  //   }
-
-  //   requestPermission();
-  // }, [])
-
-  // useEffect(() => {
-  //   const requestPermission = async () => {
-  //     try {
-  //       await Notification.requestPermission();
-  //       console.log("Notification permission granted.");
-  //     } catch (error) {
-  //       console.log("Notification denied for notification.");
-  //     }
-  //   };
-
-  //   requestPermission();
-  // }, []);
+  const auth = getAuth();
 
   useEffect(() => {
     const initialCheckedItems: boolean[][] = [];
@@ -154,7 +105,7 @@ const Page = () => {
     <main className="bg-slate-100 w-full h-full">
       <div className="bg-slate-100 flex flex-col max-w-6xl h-full mx-auto">
         <header>
-          <Header />
+          <Header auth={auth} />
         </header>
         <div
           className={cn("flex justify-center mt-4 mb-4", headingFont.className)}
@@ -169,53 +120,58 @@ const Page = () => {
             </div>
           </h1>
         </div>
-        <div
-          className={cn(
-            "flex space-x-4 w-full h-3/4 rounded-xl",
-            poppins.className,
-          )}
-        >
-          <article className="w-1/4 h-9/10 bg-white rounded-xl mx-auto">
-            <div className="flex flex-wrap w-full h-1/3 gap-2 items-center justify-center mx-auto p-3">
-              <div className="w-[46%] h-2/5 bg-neutral-100 rounded-xl"></div>
-              <div className="w-[46%] h-2/5 bg-neutral-100 rounded-xl" />
-              <div className="w-[46%] h-2/5 bg-neutral-100 rounded-xl" />
-              <div className="w-[46%] h-2/5 bg-neutral-100 rounded-xl" />
-            </div>
-            <Lists onClick={(index) => handleClick(index)} />
-            <button onClick={btnClickHandler}>알림 보내기</button>
-          </article>
-          <article className="w-2/4 h-9/10 bg-white rounded-xl p-9 pl-8">
-            <FcAcceptDatabase size="50px" />
-            <h1 className="text-xl">{pageTitles[pageIndex].title}</h1>
-            {pageTitles[pageIndex].content.map((item, index) => (
-              <div key={index}>
-                <div className="flex justify-start space-x-2 mb-5 mt-5">
-                  <Checkbox
-                    id={`${id}-${index}`}
-                    checked={
-                      checkedItems[pageIndex] && checkedItems[pageIndex][index]
-                    }
-                    onClick={() => playSound(index)}
-                    className="mr-3"
-                  />
-                  <Label id={`${id}-${index}`}>{item}</Label>
-                </div>
-                <hr className="w-full h-1 mt-4" />
+        {auth.currentUser === null ? (
+          <div
+            className={cn(
+              "flex space-x-4 w-full h-3/4 rounded-xl",
+              poppins.className,
+            )}
+          >
+            <article className="w-1/4 h-9/10 bg-white rounded-xl mx-auto">
+              <div className="flex flex-wrap w-full h-1/3 gap-2 items-center justify-center mx-auto p-3">
+                <div className="w-[46%] h-2/5 bg-neutral-100 rounded-xl" />
+                <div className="w-[46%] h-2/5 bg-neutral-100 rounded-xl" />
+                <div className="w-[46%] h-2/5 bg-neutral-100 rounded-xl" />
+                <div className="w-[46%] h-2/5 bg-neutral-100 rounded-xl" />
               </div>
-            ))}
-          </article>
-          <article className="w-1/4 h-9/10 bg-white rounded-xl p-3 relative">
-            <Image
-              className="absolute inset-0 w-full h-full object-cover rounded-xl"
-              src={`/images/main-${pageIndex}.jpeg`}
-              alt="image"
-              priority
-              fill
-              sizes="(min-width: 60em) 24vw, (min-width: 28em) 45vw, 100vw"
-            />
-          </article>
-        </div>
+              <Lists onClick={(index) => handleClick(index)} />
+              {/* <button onClick={btnClickHandler}>알림 보내기</button> */}
+            </article>
+            <article className="w-2/4 h-9/10 bg-white rounded-xl p-9 pl-8">
+              <FcAcceptDatabase size="50px" />
+              <h1 className="text-xl">{pageTitles[pageIndex].title}</h1>
+              {pageTitles[pageIndex].content.map((item, index) => (
+                <div key={index}>
+                  <div className="flex justify-start space-x-2 mb-5 mt-5">
+                    <Checkbox
+                      id={`${id}-${index}`}
+                      checked={
+                        checkedItems[pageIndex] &&
+                        checkedItems[pageIndex][index]
+                      }
+                      onClick={() => playSound(index)}
+                      className="mr-3"
+                    />
+                    <Label id={`${id}-${index}`}>{item}</Label>
+                  </div>
+                  <hr className="w-full h-1 mt-4" />
+                </div>
+              ))}
+            </article>
+            <article className="w-1/4 h-9/10 bg-white rounded-xl p-3 relative">
+              <Image
+                className="absolute inset-0 w-full h-full object-cover rounded-xl"
+                src={`/images/main-${pageIndex}.jpeg`}
+                alt="image"
+                priority
+                fill
+                sizes="(min-width: 60em) 24vw, (min-width: 28em) 45vw, 100vw"
+              />
+            </article>
+          </div>
+        ) : (
+          <UserPage />
+        )}
       </div>
     </main>
   );

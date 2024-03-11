@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { Auth, onAuthStateChanged } from "firebase/auth";
 import {
   signInAnonymous,
   signInWithGoogle,
@@ -11,9 +11,14 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { FcGoogle } from "react-icons/fc";
 import { UserInfoProps, createUser } from "@/libs/db/user";
+import { useRouter } from "next/navigation";
 
-const Header = () => {
-  const auth = getAuth();
+interface HeaderProps {
+  auth: Auth;
+}
+
+const Header = ({ auth }: HeaderProps) => {
+  const router = useRouter();
 
   const [userId, setUserId] = useState<string | null>("");
   const [userPhoto, setUserPhoto] = useState<string | null>("");
@@ -41,8 +46,7 @@ const Header = () => {
           uid: user.uid,
         };
         setUserInfo(userInfo);
-        const result = await createUser(userInfo);
-        // console.log("result", result);
+        await createUser(userInfo);
       }
     } catch (error) {
       console.error(error);
@@ -55,6 +59,7 @@ const Header = () => {
   };
 
   useEffect(() => {
+    console.log(auth);
     // onAuthStateChanged 함수를 사용하여 사용자 인증 상태의 변경을 감지합니다.
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -68,6 +73,7 @@ const Header = () => {
         setUid(user.uid);
         setUserPhoto(user.photoURL);
         console.log("로그인 성공");
+        router.refresh();
         // console.log(uid);
       } else {
         // 사용자가 로그아웃한 경우 또는 인증되지 않은 경우
@@ -80,11 +86,12 @@ const Header = () => {
           email: "",
           uid: "",
         });
+        router.refresh();
       }
     });
     // cleanup 함수를 반환하여 컴포넌트가 언마운트될 때 구독을 해제합니다.
     return () => unsubscribe();
-  }, [auth]);
+  }, [auth, router]);
 
   return (
     <div className="w-full h-[50px] flex justify-end items-center gap-2 p-5 pt-10">
