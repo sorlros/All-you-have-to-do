@@ -19,7 +19,8 @@ model User {
   email String? @unique
   name  String?
 
-  schedules Schedule[] 
+  schedules Schedule[]
+  lists     Lists[]
 }
 
 model Schedule {
@@ -31,4 +32,14 @@ model Schedule {
   todo          String
   
   user          User      @relation(fields: [uid], references: [uid])
+  list          Lists     @relation(fields: [uid], references: [uid])
+}
+
+model Lists {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  uid       String    @unique
+  title     String
+
+  user      User      @relation(fields:[uid], references: [uid])
+  schedules Schedule[]
 }

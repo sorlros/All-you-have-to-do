@@ -17,8 +17,6 @@ export const metadata: Metadata = {
   ],
 };
 
-// getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-
 const Layout = ({ children }: { children: ReactNode }) => {
   return (
     <html lang="ko">
