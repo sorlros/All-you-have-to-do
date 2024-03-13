@@ -9,6 +9,7 @@ import Image from "next/image";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Suspense, useEffect, useId, useState } from "react";
 import { Spinner } from "@/components/spinner";
+import { verifyToken } from "@/libs/firebase/get-token";
 
 const poppins = Poppins({ subsets: ["latin"], weight: "500", style: "normal" });
 
@@ -37,8 +38,14 @@ const pageTitles = [
 const UserPage = () => {
   const [pageIndex, setPageIndex] = useState<number>(0);
   const [checkedItems, setCheckedItems] = useState<boolean[][]>([]);
+  const [content, setContent] = useState<string[]>();
 
   const id = useId();
+
+  useEffect(() => {
+    verifyToken();
+    //d8Bz4aHVQ5Dp27JBuY2N_k:APA91bF4YoxnSF8MczYbawpPZj0OINmDrf_ceqB45ghkrYM6rShMf3hC6dCFQ372cWaal3CkApUJYMa64h0E-9EFcwLMOItZ4OHOarrvOQYWkU85lYKOCVwWfuCvXF9v7XHFNEaPFP5T
+  }, []);
 
   useEffect(() => {
     const initialCheckedItems: boolean[][] = [];
@@ -49,8 +56,14 @@ const UserPage = () => {
     setCheckedItems(initialCheckedItems);
   }, [setCheckedItems]);
 
+  useEffect(() => {
+    console.log("asdasd", content);
+  }, [pageIndex, setPageIndex]);
+
   const handleClick = (index: number) => {
     setPageIndex(index);
+
+    setContent(pageTitles[index].content);
   };
 
   const playSound = (index: number) => {
@@ -104,6 +117,8 @@ const UserPage = () => {
             <hr className="w-full h-1 mt-4" />
           </div>
         ))}
+        {/* TODO: content추가를 위한 +버튼 만들기 해당 버튼은 클릭시 해당 pageTitles의 content에 "" 빈문자열 데이터를 추가하며 setContent를 통해서도 빈문자열 데이터가 추가되어야한다. 해당 input태그 클릭시 수정이 가능해야하며 setContent로 해당 데이터를 변경하게 코드 생성. 이후 제거버튼(해당 index값을 이용)도 구현 */}
+        <div></div>
       </article>
       <article className="w-1/4 h-9/10 bg-white rounded-xl p-3 relative">
         <Suspense fallback={<Spinner />}>

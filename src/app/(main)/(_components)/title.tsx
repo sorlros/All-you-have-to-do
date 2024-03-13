@@ -14,12 +14,12 @@ const headingFont = localFont({
 
 const Title = ({ auth }: TitleProps) => {
   return (
-    <div>
+    <div className="">
       <header>
         <Header auth={auth} />
       </header>
       <div
-        className={cn("flex justify-center mt-4 mb-4", headingFont.className)}
+        className={cn("flex justify-center -mt-6 mb-4", headingFont.className)}
       >
         <h1 className="text-4xl">
           <div className="text-6xl">All you</div>
