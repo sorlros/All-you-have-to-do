@@ -15,9 +15,10 @@ import { useRouter } from "next/navigation";
 
 interface HeaderProps {
   auth: Auth;
+  token: string;
 }
 
-const Header = ({ auth }: HeaderProps) => {
+const Header = ({ auth, token }: HeaderProps) => {
   const router = useRouter();
 
   const [userId, setUserId] = useState<string | null>("");
@@ -30,9 +31,27 @@ const Header = ({ auth }: HeaderProps) => {
   });
 
   const handleAnonymous = async () => {
-    await signInAnonymous();
-    setUserId("익명의 사용자");
-    setUserPhoto("/images/anonymous.png");
+    try {
+      const credential = await signInAnonymous();
+      if (credential) {
+        const user = credential.user;
+        const userInfo = {
+          displayName: "anonymous",
+          email: null,
+          uid: user.uid,
+        };
+        await createUser(userInfo, token);
+      }
+      setUserId("익명의 사용자");
+      setUserPhoto("/images/anonymous.png");
+    } catch (error) {
+      console.error(error);
+      setUserInfo({
+        displayName: "",
+        email: "",
+        uid: "",
+      });
+    }
   };
 
   const handleSignInWithGoogle = async () => {
@@ -46,7 +65,13 @@ const Header = ({ auth }: HeaderProps) => {
           uid: user.uid,
         };
         setUserInfo(userInfo);
-        await createUser(userInfo);
+        // const token = await verifyToken();
+        console.log("token", token, typeof token);
+        // if (token) {
+        await createUser(userInfo, token);
+        // } else {
+        //   console.log("token이 존재하지 않습니다.");
+        // }
       }
     } catch (error) {
       console.error(error);

@@ -1,7 +1,7 @@
 "use client";
 
 import { getApps, initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { Auth, getAuth } from "firebase/auth";
 import "firebase/compat/messaging";
 import { firebaseConfig } from "@/config/firebase-config";
 
@@ -9,11 +9,26 @@ import UserPage from "./(logged)/user-page";
 import Title from "./(_components)/title";
 import ExamplePage from "../(example)/example-page";
 import "../../../public/firebase-messaging-sw";
+import { verifyToken } from "@/libs/firebase/get-token";
+import { useEffect, useState } from "react";
 
 getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 
-const Page = () => {
+const Page = () => { 
+  const [token, setToken] = useState<string>("");
   const auth = getAuth();
+
+  useEffect(() => {
+    const fetchToken = async () => {
+      const initialToken = await verifyToken();
+      if (initialToken) {
+        setToken(initialToken);
+      } else {
+        setToken("");
+      }
+    };
+    fetchToken();
+  }, []);
 
   const sendMessage = () => {
     const title = "All you have to do!";
@@ -38,7 +53,7 @@ const Page = () => {
     <main className="bg-slate-100 w-full h-full">
       <button onClick={handleClick}>push</button>
       <div className="bg-slate-100 flex flex-col max-w-6xl h-full mx-auto">
-        <Title auth={auth} />
+        <Title auth={auth} token={token} />
         {auth.currentUser === null ? <ExamplePage /> : <UserPage />}
       </div>
     </main>

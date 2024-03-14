@@ -10,6 +10,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Suspense, useEffect, useId, useState } from "react";
 import { Spinner } from "@/components/spinner";
 import { verifyToken } from "@/libs/firebase/get-token";
+import { LuCopyPlus } from "react-icons/lu";
+import { useRouter } from "next/navigation";
 
 const poppins = Poppins({ subsets: ["latin"], weight: "500", style: "normal" });
 
@@ -41,11 +43,7 @@ const UserPage = () => {
   const [content, setContent] = useState<string[]>();
 
   const id = useId();
-
-  useEffect(() => {
-    verifyToken();
-    //d8Bz4aHVQ5Dp27JBuY2N_k:APA91bF4YoxnSF8MczYbawpPZj0OINmDrf_ceqB45ghkrYM6rShMf3hC6dCFQ372cWaal3CkApUJYMa64h0E-9EFcwLMOItZ4OHOarrvOQYWkU85lYKOCVwWfuCvXF9v7XHFNEaPFP5T
-  }, []);
+  const router = useRouter();
 
   useEffect(() => {
     const initialCheckedItems: boolean[][] = [];
@@ -57,13 +55,16 @@ const UserPage = () => {
   }, [setCheckedItems]);
 
   useEffect(() => {
-    console.log("asdasd", content);
-  }, [pageIndex, setPageIndex]);
+    setContent(pageTitles[pageIndex].content);
+    // console.log("asdasd", content);
+  }, [pageIndex, setPageIndex, content]);
 
   const handleClick = (index: number) => {
     setPageIndex(index);
 
     setContent(pageTitles[index].content);
+
+    router.refresh();
   };
 
   const playSound = (index: number) => {
@@ -75,6 +76,13 @@ const UserPage = () => {
       : "/pop-39222.mp3";
     const audio = new Audio(audioFile);
     audio.play();
+  };
+
+  const handlePlusClick = () => {
+    const newContent = [...(content || [])];
+    newContent.push("");
+    setContent(newContent);
+    // console.log(content);
   };
 
   return (
@@ -95,11 +103,14 @@ const UserPage = () => {
         {/* <button onClick={btnClickHandler}>알림 보내기</button> */}
       </article>
       <article className="w-2/4 h-9/10 bg-white rounded-xl p-9 pl-8">
-        <div className="flex -ml-2">
+        <div className="flex justify-between -ml-2">
           <FcAcceptDatabase size="50px" />
-          <h1 className="flex text-2xl items-center ml-2">
+          <h1 className="flex-1 text-2xl items-center ml-2 mt-2">
             {pageTitles[pageIndex].title}
           </h1>
+          <button onClick={handlePlusClick}>
+            <LuCopyPlus size={25} className="flex justify-end mt-2" />
+          </button>
         </div>
         {pageTitles[pageIndex].content.map((item, index) => (
           <div key={index}>
@@ -118,7 +129,6 @@ const UserPage = () => {
           </div>
         ))}
         {/* TODO: content추가를 위한 +버튼 만들기 해당 버튼은 클릭시 해당 pageTitles의 content에 "" 빈문자열 데이터를 추가하며 setContent를 통해서도 빈문자열 데이터가 추가되어야한다. 해당 input태그 클릭시 수정이 가능해야하며 setContent로 해당 데이터를 변경하게 코드 생성. 이후 제거버튼(해당 index값을 이용)도 구현 */}
-        <div></div>
       </article>
       <article className="w-1/4 h-9/10 bg-white rounded-xl p-3 relative">
         <Suspense fallback={<Spinner />}>
