@@ -29,6 +29,6 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "public/firebase-messaging-sw.js"
-  ],
+, "src/libs/firebase/messaging/background-messaging.js"  ],
   "exclude": ["node_modules"]
 }

@@ -1,7 +1,6 @@
 import { getMessaging, getToken } from "firebase/messaging";
 
 export const verifyToken = async () => {
-  // const app = initializeApp(firebaseConfig);
   const messaging = getMessaging();
 
   try {

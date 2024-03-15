@@ -1,14 +1,12 @@
-// // importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js');
-// // importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js');
+// import { initializeApp } from "firebase/app";
+// import { getMessaging, onBackgroundMessage } from "firebase/messaging/sw";
 
-// importScripts(
-//   "https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js",
-// );
-// importScripts(
-//   "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js",
-// );
+importScripts('https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.9.0/firebase-messaging-compat.js');
 
-// const firebaseApp = firebase.initializeApp({
+
+
+// const firebaseApp = initializeApp({
 //   apiKey: "AIzaSyCJKwwt37N2WbUfvQb2-Hu-OcbNoDAmtB0",
 //   authDomain: "all-you-have-to-do.firebaseapp.com",
 //   projectId: "all-you-have-to-do",
@@ -17,6 +15,90 @@
 //   appId: "1:28080972325:web:2968ca49bf317747a195cc",
 //   measurementId: "G-QTMJX6MW8L",
 // });
+
+// if (typeof window !== "undefined" && typeof window.navigator !== "undefined") {
+//   const messaging = getMessaging(firebaseApp);
+
+//   messaging.onBackgroundMessage((payload) => {
+//     console.log('[firebase-messaging-sw.js] Received background message ', payload);
+//     // Customize notification here
+//     const notificationTitle = 'Background Message Title';
+//     const notificationOptions = {
+//       body: 'Background Message body.',
+//       icon: '/firebase-logo.png'
+//     };
+  
+//     self.registration.showNotification(notificationTitle,
+//       notificationOptions);
+//   });
+// }
+
+firebase.initializeApp({
+  apiKey: "AIzaSyCJKwwt37N2WbUfvQb2-Hu-OcbNoDAmtB0",
+  authDomain: "all-you-have-to-do.firebaseapp.com",
+  projectId: "all-you-have-to-do",
+  storageBucket: "all-you-have-to-do.appspot.com",
+  messagingSenderId: "28080972325",
+  appId: "1:28080972325:web:2968ca49bf317747a195cc",
+  measurementId: "G-QTMJX6MW8L",
+});
+
+firebase.messaging();
+
+// if (typeof window !== "undefined" && typeof window.navigator !== "undefined") {
+//   const messaging = getMessaging(firebaseApp);
+
+//   messaging.onBackgroundMessage((payload) => {
+//     console.log('[firebase-messaging-sw.js] Received background message ', payload);
+//     // Customize notification here
+//     const notificationTitle = 'Background Message Title';
+//     const notificationOptions = {
+//       body: 'Background Message body.',
+//       icon: '/firebase-logo.png'
+//     };
+  
+//     self.registration.showNotification(notificationTitle,
+//       notificationOptions);
+//   });
+// }
+
+// if (window.registration) {
+//   // registration 속성이 존재할 때만 실행되는 코드
+// }
+
+
+// self.addEventListener("install", function (e) {
+//   console.log("fcm sw install..");
+//   self.skipWaiting();
+// });
+
+// self.addEventListener("activate", function (e) {
+//   console.log("fcm sw activate..");
+// });
+
+
+
+// self.addEventListener("push", function (e) {
+//   if (!e.data.json()) return;
+
+//   const resultData = e.data.json().notification;
+//   const notificationTitle = resultData.title;
+//   const notificationOptions = {
+//     body: resultData.body,
+//     icon: resultData.image, // 웹 푸시 이미지는 icon
+//     tag: resultData.tag,
+//   };
+
+//   self.registration.showNotification(notificationTitle, notificationOptions);
+// });
+
+// self.addEventListener("notificationclick", function (event) {
+//   console.log("notification click");
+//   const url = "/";
+//   event.notification.close();
+//   event.waitUntil(clients.openWindow(url));
+// });
+
 
 // // if (typeof window !== "undefined" && typeof window.navigator !== "undefined") {
 // //   const messaging = getMessaging(firebaseApp);

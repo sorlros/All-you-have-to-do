@@ -45,3 +45,6 @@ next-env.d.ts
 
 # Firebase Admin SDK Key
 serviceAccountKey.json
+
+# https 
+*.pem
