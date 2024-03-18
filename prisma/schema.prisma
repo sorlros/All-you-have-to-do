@@ -16,31 +16,48 @@ datasource db {
 model User {
   id    String  @id @default(auto()) @map("_id") @db.ObjectId
   uid   String  @unique
-  email String? @unique
-  name  String?
-  token String
+  email String  @unique
+  name  String
+  token String  
 
   schedules Schedule[]
-  lists     Lists[]
+  lists     List[]
+}
+
+model AnonymousUser {
+  id  String    @id @default(auto()) @map("_id") @db.ObjectId
+  uid String    @unique
+  token String  
+  createdAt DateTime @default(now())
+  deletedAt DateTime?
+
+  schedules Schedule[]
+  lists     List[]
 }
 
 model Schedule {
   id            String    @id @default(auto()) @map("_id") @db.ObjectId
-  uid           String    
+  uid           String    @unique
+  token         String       
   days          String[]
   time          String
   reiteration   Boolean  
   todo          String
   
-  user          User      @relation(fields: [uid], references: [uid])
-  list          Lists     @relation(fields: [uid], references: [uid])
+  user           User           @relation(fields: [uid], references: [uid])
+  anonymousUser  AnonymousUser  @relation(fields: [uid], references: [uid])
+  list           List           @relation(fields: [uid], references: [uid])
 }
 
-model Lists {
+model List {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
   uid       String    @unique
+  token     String    
   title     String
 
-  user      User      @relation(fields:[uid], references: [uid])
-  schedules Schedule[]
+  user          User          @relation(fields:[uid], references: [uid])
+  anonymousUser AnonymousUser @relation(fields: [uid], references: [uid])
+  schedules     Schedule[]
 }
+
+

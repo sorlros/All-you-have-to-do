@@ -12,6 +12,7 @@ import Image from "next/image";
 import { FcGoogle } from "react-icons/fc";
 import { UserInfoProps, createUser } from "@/libs/db/user";
 import { useRouter } from "next/navigation";
+import { createAnonymousUser } from "@/libs/db/anonymous-user";
 
 interface HeaderProps {
   auth: Auth;
@@ -40,7 +41,7 @@ const Header = ({ auth, token }: HeaderProps) => {
           email: null,
           uid: user.uid,
         };
-        await createUser(userInfo, token);
+        await createAnonymousUser(userInfo, token);
       }
       setUserId("익명의 사용자");
       setUserPhoto("/images/anonymous.png");
@@ -53,7 +54,7 @@ const Header = ({ auth, token }: HeaderProps) => {
       });
     }
   };
-
+ 
   const handleSignInWithGoogle = async () => {
     try {
       const credential = await signInWithGoogle();

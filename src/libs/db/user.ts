@@ -27,23 +27,26 @@ export const createUser = async (userInfo: UserInfoProps, token: string) => {
   let user;
 
   try {
-    user = await db.user.findUnique({
-      where: {
-        uid,
-      },
-    });
-    if (user) {
-      return console.log("이미 계정이 존재해서 생성x");
-    } else {
-      user = await db.user.create({
-        data: {
+    if (email && displayName && uid) {
+      user = await db.user.findUnique({
+        where: {
           uid,
-          email,
-          name: displayName,
-          token,
         },
       });
-    }
+      if (user) {
+        return console.log("이미 계정이 존재해서 생성x")
+      } else {
+        user = await db.user.create({
+          data: {
+            uid,
+            name: displayName,
+            token,
+            email
+          }
+        })
+        console.log("유저 생성완료")
+      }
+    } 
   } catch (error) {
     console.error(error);
   }

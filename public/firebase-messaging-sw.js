@@ -1,20 +1,62 @@
-// import { initializeApp } from "firebase/app";
-// import { getMessaging, onBackgroundMessage } from "firebase/messaging/sw";
-
-importScripts('https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/10.9.0/firebase-messaging-compat.js');
+// importScripts('https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js');
+// importScripts('https://www.gstatic.com/firebasejs/10.9.0/firebase-messaging-compat.js');
 
 
+importScripts(
+  "https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"
+);
+importScripts(
+  "https://www.gstatic.com/firebasejs/10.9.0/firebase-messaging-compat.js"
+);
 
-// const firebaseApp = initializeApp({
-//   apiKey: "AIzaSyCJKwwt37N2WbUfvQb2-Hu-OcbNoDAmtB0",
-//   authDomain: "all-you-have-to-do.firebaseapp.com",
-//   projectId: "all-you-have-to-do",
-//   storageBucket: "all-you-have-to-do.appspot.com",
-//   messagingSenderId: "28080972325",
-//   appId: "1:28080972325:web:2968ca49bf317747a195cc",
-//   measurementId: "G-QTMJX6MW8L",
-// });
+firebase.initializeApp({
+  apiKey: "AIzaSyCJKwwt37N2WbUfvQb2-Hu-OcbNoDAmtB0",
+  authDomain: "all-you-have-to-do.firebaseapp.com",
+  projectId: "all-you-have-to-do",
+  storageBucket: "all-you-have-to-do.appspot.com",
+  messagingSenderId: "28080972325",
+  appId: "1:28080972325:web:2968ca49bf317747a195cc",
+  measurementId: "G-QTMJX6MW8L",
+});
+
+const messaging = firebase.messaging();
+
+self.addEventListener('push', function(event) {
+	// 받은 푸시 데이터를 처리해 알림으로 띄우는 내용
+});
+
+self.addEventListener('notificationclick', {
+	// 띄운 알림창을 클릭했을 때 처리할 내용
+});
+
+
+// const firebaseConfig2 = {
+  // apiKey: "AIzaSyCJKwwt37N2WbUfvQb2-Hu-OcbNoDAmtB0",
+  // authDomain: "all-you-have-to-do.firebaseapp.com",
+  // projectId: "all-you-have-to-do",
+  // storageBucket: "all-you-have-to-do.appspot.com",
+  // messagingSenderId: "28080972325",
+  // appId: "1:28080972325:web:2968ca49bf317747a195cc",
+  // measurementId: "G-QTMJX6MW8L",
+// };
+
+// const app = initializeApp(firebaseConfig2);
+
+// if (typeof window !== "undefined" && typeof window.navigator !== "undefined") {
+//   const messaging = getMessaging(app);
+// }
+
+// if (self.registration) {
+//   self.addEventListener("install", function (e) {
+//     console.log("fcm sw install..");
+//     self.skipWaiting();
+//   });
+  
+//   self.addEventListener("activate", function (e) {
+//     console.log("fcm sw activate..");
+//   });
+// }
+
 
 // if (typeof window !== "undefined" && typeof window.navigator !== "undefined") {
 //   const messaging = getMessaging(firebaseApp);
@@ -32,19 +74,6 @@ importScripts('https://www.gstatic.com/firebasejs/10.9.0/firebase-messaging-comp
 //       notificationOptions);
 //   });
 // }
-
-firebase.initializeApp({
-  apiKey: "AIzaSyCJKwwt37N2WbUfvQb2-Hu-OcbNoDAmtB0",
-  authDomain: "all-you-have-to-do.firebaseapp.com",
-  projectId: "all-you-have-to-do",
-  storageBucket: "all-you-have-to-do.appspot.com",
-  messagingSenderId: "28080972325",
-  appId: "1:28080972325:web:2968ca49bf317747a195cc",
-  measurementId: "G-QTMJX6MW8L",
-});
-
-firebase.messaging();
-
 // if (typeof window !== "undefined" && typeof window.navigator !== "undefined") {
 //   const messaging = getMessaging(firebaseApp);
 
