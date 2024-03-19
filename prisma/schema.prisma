@@ -16,12 +16,12 @@ datasource db {
 model User {
   id    String  @id @default(auto()) @map("_id") @db.ObjectId
   uid   String  @unique
-  email String  @unique
+  email String  
   name  String
   token String  
 
-  schedules Schedule[]
-  lists     List[]
+  titles    Title[]
+  @@unique([uid, token])
 }
 
 model AnonymousUser {
@@ -29,35 +29,46 @@ model AnonymousUser {
   uid String    @unique
   token String  
   createdAt DateTime @default(now())
-  deletedAt DateTime?
+  expireAt DateTime?
 
-  schedules Schedule[]
-  lists     List[]
+  titles Title[]
+  @@unique([uid, token])
+}
+
+
+
+model Title {
+  id            String               @id @default(auto()) @map("_id") @db.ObjectId
+  uid           String    
+  token         String
+
+  user          User?                @relation(fields: [uid, token], references: [uid, token])
+  anonymousUser AnonymousUser?       @relation(fields: [uid, token], references: [uid, token])
+  todos         Todo[]
+
+  @@unique([uid, token])
+}
+model Todo {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  uid         String    
+  token       String
+  content     String
+
+  title     Title     @relation(fields: [uid, token], references: [uid, token])
+  schedule  Schedule  @relation(fields: [uid, token], references: [uid, token])
 }
 
 model Schedule {
   id            String    @id @default(auto()) @map("_id") @db.ObjectId
-  uid           String    @unique
+  uid           String    
   token         String       
   days          String[]
   time          String
-  reiteration   Boolean  
-  todo          String
+  reiteration   Boolean
   
-  user           User           @relation(fields: [uid], references: [uid])
-  anonymousUser  AnonymousUser  @relation(fields: [uid], references: [uid])
-  list           List           @relation(fields: [uid], references: [uid])
-}
+  todos         Todo[]
 
-model List {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  uid       String    @unique
-  token     String    
-  title     String
-
-  user          User          @relation(fields:[uid], references: [uid])
-  anonymousUser AnonymousUser @relation(fields: [uid], references: [uid])
-  schedules     Schedule[]
+  @@unique([uid, token])
 }
 
 

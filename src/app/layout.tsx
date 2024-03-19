@@ -11,8 +11,8 @@ export const metadata: Metadata = {
   description: "Manage your schedule and to-do",
   icons: [
     {
-      url: "/public/images/logo.png",
-      href: "/public/images/logo.png",
+      url: "/images/logo.png",
+      href: "/images/logo.png",
     },
   ],
 };

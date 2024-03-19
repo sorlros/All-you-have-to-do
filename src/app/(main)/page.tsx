@@ -10,13 +10,9 @@ import ExamplePage from "../(example)/example-page";
 import { verifyToken } from "@/libs/firebase/get-token";
 import { useEffect, useState } from "react";
 import { getMessaging, onMessage } from "firebase/messaging";
-// import "@/libs/firebase/fcm"
-
-// getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 
 const Page = () => { 
   const [token, setToken] = useState<string>("");
-  // const messaging = getMessaging();
 
   const firebaseApps = getApps();
     const firebaseApp = firebaseApps.length === 0 ? initializeApp(firebaseConfig) : firebaseApps[0];

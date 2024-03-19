@@ -10,9 +10,11 @@ import {
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { FcGoogle } from "react-icons/fc";
+import { PiWarningFill } from "react-icons/pi";
 import { UserInfoProps, createUser } from "@/libs/db/user";
 import { useRouter } from "next/navigation";
 import { createAnonymousUser } from "@/libs/db/anonymous-user";
+import { HeaderTooltip } from "./tooltip";
 
 interface HeaderProps {
   auth: Auth;
@@ -30,6 +32,8 @@ const Header = ({ auth, token }: HeaderProps) => {
     email: "",
     uid: "",
   });
+
+  const isAnonymous = auth.currentUser?.isAnonymous;
 
   const handleAnonymous = async () => {
     try {
@@ -54,7 +58,7 @@ const Header = ({ auth, token }: HeaderProps) => {
       });
     }
   };
- 
+
   const handleSignInWithGoogle = async () => {
     try {
       const credential = await signInWithGoogle();
@@ -91,16 +95,11 @@ const Header = ({ auth, token }: HeaderProps) => {
       if (user) {
         // 사용자가 로그인한 경우, user 객체를 통해 사용자 정보에 접근할 수 있습니다.
         console.log("user", user);
-        // console.log("auth", auth);
-
-        // console.log("auth.currentUser", auth.currentUser);
-
         setUserId(user.displayName);
         setUid(user.uid);
         setUserPhoto(user.photoURL);
         console.log("로그인 성공");
         router.refresh();
-        // console.log(uid);
       } else {
         // 사용자가 로그아웃한 경우 또는 인증되지 않은 경우
         console.log("User is signed out");
@@ -123,15 +122,19 @@ const Header = ({ auth, token }: HeaderProps) => {
     <div className="w-full h-[50px] flex justify-end items-center gap-2 p-5 pt-10">
       {uid !== "" ? (
         <>
+          {isAnonymous && (
+            <HeaderTooltip icon={PiWarningFill} label="익명 유저는 일주일 후 정보가 삭제됩니다." color="red"/>
+          )}
           {userPhoto && (
             <>
               <div className="flex rounded-lg w-[45px] h-[45px] relative">
                 <Image
                   src={userPhoto}
                   alt="User"
-                  className="w-full h-full object-cover absolute rounded-lg"
-                  fill
+                  className="w-full h-auto object-cover absolute rounded-lg"
                   sizes="(min-width: 60em) 24vw, (min-width: 28em) 45vw, 100vw"
+                  width={25}
+                  height={25}
                 />
               </div>
               <h1>{userId} 님</h1>
@@ -168,5 +171,6 @@ const Header = ({ auth, token }: HeaderProps) => {
     </div>
   );
 };
+
 
 export default Header;

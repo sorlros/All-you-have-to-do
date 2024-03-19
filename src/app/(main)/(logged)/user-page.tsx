@@ -12,6 +12,7 @@ import { Spinner } from "@/components/spinner";
 import { verifyToken } from "@/libs/firebase/get-token";
 import { LuCopyPlus } from "react-icons/lu";
 import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
 
 const poppins = Poppins({ subsets: ["latin"], weight: "500", style: "normal" });
 
@@ -82,7 +83,7 @@ const UserPage = () => {
     const newContent = [...(content || [])];
     newContent.push("");
     setContent(newContent);
-    // console.log(content);
+    console.log(content);
   };
 
   return (
@@ -114,16 +115,18 @@ const UserPage = () => {
         </div>
         {pageTitles[pageIndex].content.map((item, index) => (
           <div key={index}>
-            <div className="flex justify-start space-x-2 mb-5 mt-5">
+            <div className="flex w-full h-[30px] justify-start space-x-2 mb-5 mt-5">
               <Checkbox
                 id={`${id}-${index}`}
                 checked={
                   checkedItems[pageIndex] && checkedItems[pageIndex][index]
                 }
                 onClick={() => playSound(index)}
-                className="mr-3"
+                className="flex mr-3 items-center justify-center"
               />
-              <Label id={`${id}-${index}`}>{item}</Label>
+              <Label id={`${id}-${index}`}>
+                <Input value={item} className="text-md" onChange={() => {}}/>
+              </Label>
             </div>
             <hr className="w-full h-1 mt-4" />
           </div>
