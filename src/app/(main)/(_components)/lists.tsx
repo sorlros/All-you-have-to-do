@@ -18,7 +18,7 @@ export const labelLists = [
 
 const Lists = ({ onClick }: ListsProps) => {
   const [isActivated, setIsActivated] = useState<{ [key: number]: boolean }>(
-    {},
+    {[0]: true},
   );
 
   const handleClick = (index: number) => {

@@ -14,14 +14,13 @@ datasource db {
 }
 
 model User {
-  id    String  @id @default(auto()) @map("_id") @db.ObjectId
-  uid   String  @unique
-  email String  
-  name  String
-  token String  
+  id       String    @id @default(auto()) @map("_id") @db.ObjectId
+  uid      String    @unique
+  email    String
+  name     String
+  token    String
 
   titles    Title[]
-  @@unique([uid, token])
 }
 
 model AnonymousUser {
@@ -34,19 +33,15 @@ model AnonymousUser {
   titles Title[]
   @@unique([uid, token])
 }
-
-
-
 model Title {
   id            String               @id @default(auto()) @map("_id") @db.ObjectId
-  uid           String    
+  name          String
+  uid           String
   token         String
 
-  user          User?                @relation(fields: [uid, token], references: [uid, token])
+  user          User?                @relation(fields: [uid], references: [uid])
   anonymousUser AnonymousUser?       @relation(fields: [uid, token], references: [uid, token])
   todos         Todo[]
-
-  @@unique([uid, token])
 }
 model Todo {
   id          String    @id @default(auto()) @map("_id") @db.ObjectId
@@ -54,21 +49,19 @@ model Todo {
   token       String
   content     String
 
-  title     Title     @relation(fields: [uid, token], references: [uid, token])
-  schedule  Schedule  @relation(fields: [uid, token], references: [uid, token])
+  titleId     String    @db.ObjectId
+  scheduleId  String    @db.ObjectId  @unique
+  title       Title     @relation(fields: [titleId], references: [id])
+  schedule    Schedule  @relation(fields: [scheduleId], references: [id])
 }
 
 model Schedule {
   id            String    @id @default(auto()) @map("_id") @db.ObjectId
-  uid           String    
+  uid           String    @unique
   token         String       
   days          String[]
   time          String
   reiteration   Boolean
   
-  todos         Todo[]
-
-  @@unique([uid, token])
+  todo          Todo?
 }
-
-

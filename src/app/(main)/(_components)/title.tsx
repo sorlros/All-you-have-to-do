@@ -6,18 +6,17 @@ import { cn } from "@/libs/utils";
 
 interface TitleProps {
   auth: Auth;
-  token: string;
 }
 
 const headingFont = localFont({
   src: "../../../../public/Fredoka/static/Fredoka-Medium.ttf",
 });
 
-const Title = ({ auth, token }: TitleProps) => {
+const Title = ({ auth }: TitleProps) => {
   return (
     <div className="">
       <header>
-        <Header auth={auth} token={token} />
+        <Header auth={auth} />
       </header>
       <div
         className={cn("flex justify-center -mt-6 mb-4", headingFont.className)}

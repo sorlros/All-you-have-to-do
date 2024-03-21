@@ -38,22 +38,6 @@ export const createAnonymousUser = async (userInfo: UserInfoProps, token: string
         createdAt
       }
     })
-
-    // if (user) {
-    //   await db.$runCommandRaw({
-    //     createIndexes: 'UserActivity',
-    //     indexes: [
-    //       {
-    //         key: {
-    //           createdAt: 1,
-    //         },
-    //         name: 'createdAt_ttl_index',
-    //         expireAfterSeconds: 30,
-    //       },
-    //     ],
-    //   });
-    // }
-    
     
     console.log("익명 유저 생성 완료")
   } catch (error) {

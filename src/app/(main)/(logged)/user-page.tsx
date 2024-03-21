@@ -13,6 +13,10 @@ import { verifyToken } from "@/libs/firebase/get-token";
 import { LuCopyPlus } from "react-icons/lu";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
+import { Auth } from "firebase/auth";
+import { db } from "@/libs/prisma/db";
+import { getTodos } from "@/actions/todos/get-todos";
+import useTokenStore from "@/app/hooks/use-token-store";
 
 const poppins = Poppins({ subsets: ["latin"], weight: "500", style: "normal" });
 
@@ -38,13 +42,33 @@ const pageTitles = [
   },
 ];
 
-const UserPage = () => {
+interface userPageProps {
+  auth: Auth;
+}
+
+const UserPage = ({ auth }: userPageProps) => {
   const [pageIndex, setPageIndex] = useState<number>(0);
   const [checkedItems, setCheckedItems] = useState<boolean[][]>([]);
   const [content, setContent] = useState<string[]>();
 
+  const { token, setToken } = useTokenStore();
+
   const id = useId();
   const router = useRouter();
+
+  if (auth.currentUser === null) {
+    router.push("/");
+  }
+
+  useEffect(() => {
+    const uid = auth.currentUser?.uid as string;
+    const fetchData = async () => {
+      if (uid) {
+        const data = await getTodos({ uid, token });
+        // toto: 반환받은 data 저장소에 저장 하고 후에 뿌려주기
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const initialCheckedItems: boolean[][] = [];
@@ -57,15 +81,21 @@ const UserPage = () => {
 
   useEffect(() => {
     setContent(pageTitles[pageIndex].content);
+    // console.log("page index", pageIndex);
     // console.log("asdasd", content);
   }, [pageIndex, setPageIndex, content]);
 
-  const handleClick = (index: number) => {
+  const handleClick = async (index: number) => {
     setPageIndex(index);
 
     setContent(pageTitles[index].content);
 
-    router.refresh();
+    const uid = auth.currentUser?.uid as string;
+    if (uid) {
+      const data = await getTodos({ uid, token });
+      console.log("asdasd", data);
+      setContent();
+    }
   };
 
   const playSound = (index: number) => {
@@ -125,7 +155,7 @@ const UserPage = () => {
                 className="flex mr-3 items-center justify-center"
               />
               <Label id={`${id}-${index}`}>
-                <Input value={item} className="text-md" onChange={() => {}}/>
+                <Input value={item} className="text-md" onChange={() => {}} />
               </Label>
             </div>
             <hr className="w-full h-1 mt-4" />

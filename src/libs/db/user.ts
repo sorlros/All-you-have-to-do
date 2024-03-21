@@ -19,36 +19,49 @@ export const createUser = async (userInfo: UserInfoProps, token: string) => {
   }
 
   if (typeof token !== "string") {
-    throw new Error("토큰이 유효하지 않습니다.")
+    throw new Error("토큰이 유효하지 않습니다.");
   }
 
   const { email, displayName, uid } = userInfo;
 
-  let user;
-
   try {
     if (email && displayName && uid) {
-      user = await db.user.findUnique({
+      const existingUser = await db.user.findUnique({
         where: {
           uid,
         },
       });
-      if (user) {
-        return console.log("이미 계정이 존재해서 생성x")
+      if (existingUser) {
+        return console.log("이미 계정이 존재해서 생성x");
       } else {
-        user = await db.user.create({
+        const user = await db.user.create({
           data: {
             uid,
             name: displayName,
             token,
-            email
-          }
-        })
-        console.log("유저 생성완료")
+            email,
+          },
+        });
+
+        if (user) {
+          const titles = await db.title.createMany({
+            data: [
+              { name: "주방", uid, token },
+              { name: "운동", uid, token },
+              { name: "목표", uid, token },
+              { name: "지출", uid, token },
+              { name: "기타", uid, token },
+            ],
+          });
+          console.log("titles 생성완료", titles);
+          return user;
+        } else {
+          console.log("user생성 오류");
+        }
+        console.log("유저 생성완료");
       }
-    } 
+    }
   } catch (error) {
     console.error(error);
   }
-  return user;
 };

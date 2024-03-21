@@ -15,23 +15,21 @@ import { UserInfoProps, createUser } from "@/libs/db/user";
 import { useRouter } from "next/navigation";
 import { createAnonymousUser } from "@/libs/db/anonymous-user";
 import { HeaderTooltip } from "./tooltip";
+import { verifyToken } from "@/libs/firebase/get-token";
+import useTokenStore from "@/app/hooks/use-token-store";
 
 interface HeaderProps {
   auth: Auth;
-  token: string;
 }
 
-const Header = ({ auth, token }: HeaderProps) => {
+const Header = ({ auth }: HeaderProps) => {
   const router = useRouter();
 
   const [userId, setUserId] = useState<string | null>("");
   const [userPhoto, setUserPhoto] = useState<string | null>("");
   const [uid, setUid] = useState<string>("");
-  const [userInfo, setUserInfo] = useState<UserInfoProps>({
-    displayName: "",
-    email: "",
-    uid: "",
-  });
+
+  const { token, setToken } = useTokenStore();
 
   const isAnonymous = auth.currentUser?.isAnonymous;
 
@@ -45,17 +43,18 @@ const Header = ({ auth, token }: HeaderProps) => {
           email: null,
           uid: user.uid,
         };
-        await createAnonymousUser(userInfo, token);
+        const token = await verifyToken();
+        if (token) {
+          setToken(token);
+          await createAnonymousUser(userInfo, token);
+        } else {
+          return console.log("토큰값이 존재하지 않습니다.");
+        }
       }
       setUserId("익명의 사용자");
       setUserPhoto("/images/anonymous.png");
     } catch (error) {
       console.error(error);
-      setUserInfo({
-        displayName: "",
-        email: "",
-        uid: "",
-      });
     }
   };
 
@@ -69,22 +68,17 @@ const Header = ({ auth, token }: HeaderProps) => {
           email: user.email,
           uid: user.uid,
         };
-        setUserInfo(userInfo);
-        // const token = await verifyToken();
-        console.log("token", token, typeof token);
-        // if (token) {
-        await createUser(userInfo, token);
-        // } else {
-        //   console.log("token이 존재하지 않습니다.");
-        // }
+        const token = await verifyToken();
+
+        if (token) {
+          setToken(token);
+          await createUser(userInfo, token);
+        } else {
+          return console.log("token이 존재하지 않습니다.");
+        }
       }
     } catch (error) {
       console.error(error);
-      setUserInfo({
-        displayName: "",
-        email: "",
-        uid: "",
-      });
     }
   };
 
@@ -106,11 +100,7 @@ const Header = ({ auth, token }: HeaderProps) => {
         setUserId(null);
         setUserPhoto(null);
         setUid("");
-        setUserInfo({
-          displayName: "",
-          email: "",
-          uid: "",
-        });
+        setToken("");
         router.refresh();
       }
     });
@@ -123,7 +113,11 @@ const Header = ({ auth, token }: HeaderProps) => {
       {uid !== "" ? (
         <>
           {isAnonymous && (
-            <HeaderTooltip icon={PiWarningFill} label="익명 유저는 일주일 후 정보가 삭제됩니다." color="red"/>
+            <HeaderTooltip
+              icon={PiWarningFill}
+              label="익명 유저는 일주일 후 정보가 삭제됩니다."
+              color="red"
+            />
           )}
           {userPhoto && (
             <>
@@ -171,6 +165,5 @@ const Header = ({ auth, token }: HeaderProps) => {
     </div>
   );
 };
-
 
 export default Header;
