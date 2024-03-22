@@ -21,7 +21,7 @@ export const getTodos = async ({ uid, token }: GetTodos) => {
         },
       },
     });
-    console.log("data", usersWithData);
+    // console.log("data", usersWithData);
     return usersWithData;
   } catch (error) {
     console.error("유저의 todos 정보를 불러오지 못했습니다.", error);
