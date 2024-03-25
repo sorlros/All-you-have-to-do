@@ -1,17 +1,17 @@
 import { create } from "zustand";
 
-interface TokenStore {
+interface TokenWithUidStore {
   token: string;
   setToken: (param: string) => void;
   uid: string;
   setUid: (param: string) => void;
 }
 
-const useTokenStore = create<TokenStore>((set) => ({
+const useTokenWithUidStore = create<TokenWithUidStore>((set) => ({
   token: "",
   setToken: (param) => set({ token: param }),
   uid: "",
   setUid: (param) => set({ uid: param }),
 }));
 
-export default useTokenStore;
+export default useTokenWithUidStore;

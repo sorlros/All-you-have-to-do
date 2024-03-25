@@ -36,7 +36,7 @@ model AnonymousUser {
 model Title {
   id            String               @id @default(auto()) @map("_id") @db.ObjectId
   name          String
-  uid           String
+  uid           String              
   token         String
 
   user          User?                @relation(fields: [uid], references: [uid])
@@ -49,10 +49,10 @@ model Todo {
   token       String
   content     String
 
-  titleId     String    @db.ObjectId
-  scheduleId  String    @db.ObjectId  @unique
-  title       Title     @relation(fields: [titleId], references: [id])
-  schedule    Schedule  @relation(fields: [scheduleId], references: [id])
+  titleId     String      @db.ObjectId
+  scheduleId  String?     @db.ObjectId @unique
+  title       Title       @relation(fields: [titleId], references: [id])
+  schedule    Schedule?   @relation(fields: [scheduleId], references: [id])
 }
 
 model Schedule {

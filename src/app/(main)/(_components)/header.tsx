@@ -16,7 +16,7 @@ import { useRouter } from "next/navigation";
 import { createAnonymousUser } from "@/libs/db/anonymous-user";
 import { HeaderTooltip } from "./tooltip";
 import { verifyToken } from "@/libs/firebase/get-token";
-import useTokenStore from "@/app/hooks/use-token-store";
+import useTokenStore from "@/app/hooks/use-token-with-uid-store";
 
 interface HeaderProps {
   auth: Auth;
