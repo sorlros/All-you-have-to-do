@@ -1,6 +1,7 @@
 "use server";
 
 import { db } from "@/libs/prisma/db";
+import cuid from "cuid";
 interface AddTodoProps {
   title: string;
   exTodo: string;
@@ -28,7 +29,7 @@ export const addTodo = async ({
       throw new Error(`타이틀 '${title}'을(를) 찾을 수 없습니다.`);
     }
 
-    console.log("exTODO", exTodo);
+    // console.log("exTODO", exTodo);
     if (titleInfo) {
       if (exTodo !== undefined && exTodo !== "") {
         const existingTodo = await db.todo.findFirst({
@@ -54,13 +55,16 @@ export const addTodo = async ({
         // exTodo가 존재하므로 업데이트
       } else {
         // todo 생성
+        if (newValue === "") return;
+        const scheduleId = cuid();
+
         const newTodo = await db.todo.create({
           data: {
             uid,
             token,
             content: newValue,
             titleId: titleInfo.id,
-            //scheduleId 추가 혹은 옵셔널 체크
+            scheduleId,
           },
         });
         console.log("todo 생성 완료");

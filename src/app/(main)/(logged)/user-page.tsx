@@ -18,6 +18,7 @@ import {
 import { Spinner } from "@/components/spinner";
 import { verifyToken } from "@/libs/firebase/get-token";
 import { LuCopyPlus } from "react-icons/lu";
+import { AiOutlineClose } from "react-icons/ai";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Auth } from "firebase/auth";
@@ -25,6 +26,7 @@ import { getTodos } from "@/actions/todos/get-todos";
 import useTokenWithUidStore from "@/app/hooks/use-token-with-uid-store";
 import { addTodo } from "@/actions/todos/add-todo";
 import { TitleWithTodos } from "@/libs/type";
+import { removeTodo } from "@/actions/todos/remove-todo";
 
 const poppins = Poppins({ subsets: ["latin"], weight: "500", style: "normal" });
 
@@ -70,12 +72,17 @@ const UserPage = ({ auth }: userPageProps) => {
         setPageData(userData);
         // console.log("data", userData);
         const initialCheckedItems: boolean[][] = [];
+        const todos = userData.titles[0].todos;
 
-        userData?.titles.forEach((title) => {
-          const titleCheckedItems = new Array(title.todos.length).fill(false);
-          initialCheckedItems.push(titleCheckedItems);
-        });
-        setCheckedItems(initialCheckedItems);
+        if (todos.length > 0) {
+          userData?.titles.forEach((title) => {
+            const titleCheckedItems = new Array(title.todos.length).fill(false);
+            initialCheckedItems.push(titleCheckedItems);
+          });
+          setCheckedItems(initialCheckedItems);
+        } else {
+          return;
+        }
       } catch (error) {
         console.error("데이터를 불러오는 중에 오류가 발생했습니다.", error);
       }
@@ -116,7 +123,7 @@ const UserPage = ({ auth }: userPageProps) => {
     pageData.titles[pageIndex].todos[index];
   };
 
-  const enableEditing = () => {
+  const enableEditing = (index: number) => {
     setTimeout(() => {
       inputRef.current?.focus();
       inputRef.current?.select();
@@ -132,10 +139,43 @@ const UserPage = ({ auth }: userPageProps) => {
       const exTodo = pageData.titles[pageIndex].todos[index].content;
       const newValue = event.target.value;
 
+      const newPageData = { ...pageData };
+      const newTodos = [...newPageData.titles[pageIndex].todos];
+      const lastItemIndex = newTodos.length - 1;
+      newTodos[lastItemIndex].content = newValue;
+
+      newPageData.titles[pageIndex].todos = newTodos;
+
       console.log("재료", { title, newValue, exTodo, token, uid });
+
       await addTodo({ title, newValue, exTodo, token, uid });
+      setPageData(newPageData);
     } catch (error) {
       console.error("todo 생성오류", error);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      const newPageData = { ...pageData };
+      const newTodos = [...newPageData.titles[pageIndex].todos];
+      const lastItem = newTodos[newTodos.length - 1].content;
+
+      /// todo 제거뒤 setPageData 오류 수정
+
+      if (lastItem.trim() === "") {
+        newTodos.pop();
+        console.log("blank", newPageData);
+        setPageData(newPageData);
+        return;
+      } else {
+        newTodos.pop();
+        await removeTodo(lastItem, uid);
+        console.log("noBlank", newPageData);
+        setPageData(newPageData);
+      }
+    } catch (error) {
+      console.error("todo 제거 오류");
     }
   };
 
@@ -179,16 +219,23 @@ const UserPage = ({ auth }: userPageProps) => {
                   onClick={() => playSound(index)}
                   className="flex mr-3 items-center justify-center"
                 />
-                <Label id={`${id}-${index}`}>
+                <Label id={`${id}-${index}`} className="w-full">
                   <Input
                     ref={inputRef}
                     defaultValue={todo.content}
                     className="text-md"
-                    onClick={enableEditing}
+                    // onClick={(event, index) => enableEditing(index)}
                     onBlur={(event) => onBlur(event, index)}
                   />
                 </Label>
+                <div
+                  className="flex justify-end items-center cursor-pointer"
+                  onClick={handleDelete}
+                >
+                  <AiOutlineClose />
+                </div>
               </div>
+
               <hr className="w-full h-1 mt-4" />
             </div>
           ))}

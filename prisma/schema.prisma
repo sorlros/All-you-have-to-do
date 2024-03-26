@@ -44,20 +44,22 @@ model Title {
   todos         Todo[]
 }
 model Todo {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  uid         String    
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  uid         String
   token       String
-  content     String
+  content     String      @unique
 
   titleId     String      @db.ObjectId
-  scheduleId  String?     @db.ObjectId @unique
   title       Title       @relation(fields: [titleId], references: [id])
+  scheduleId  String      @unique
   schedule    Schedule?   @relation(fields: [scheduleId], references: [id])
+
+  @@unique([uid, content])
 }
 
 model Schedule {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
-  uid           String    @unique
+  id            String    @id @map("_id")
+  uid           String    
   token         String       
   days          String[]
   time          String
