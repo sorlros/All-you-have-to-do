@@ -50,6 +50,7 @@ export const addTodo = async ({
             },
           });
           console.log("todo 업데이트 완료");
+          return { message: "Todo가 업데이트되었습니다." };
         }
 
         // exTodo가 존재하므로 업데이트
@@ -58,7 +59,7 @@ export const addTodo = async ({
         if (newValue === "") return;
         const scheduleId = cuid();
 
-        const newTodo = await db.todo.create({
+        await db.todo.create({
           data: {
             uid,
             token,
@@ -68,9 +69,10 @@ export const addTodo = async ({
           },
         });
         console.log("todo 생성 완료");
+        return { message: "Todo가 생성되었습니다." };
       }
     }
   } catch (error) {
-    console.error("todo오류 발생", error);
+    console.error("error", error);
   }
 };

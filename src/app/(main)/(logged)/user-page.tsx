@@ -27,6 +27,7 @@ import useTokenWithUidStore from "@/app/hooks/use-token-with-uid-store";
 import { addTodo } from "@/actions/todos/add-todo";
 import { TitleWithTodos } from "@/libs/type";
 import { removeTodo } from "@/actions/todos/remove-todo";
+import { toast } from "sonner";
 
 const poppins = Poppins({ subsets: ["latin"], weight: "500", style: "normal" });
 
@@ -52,7 +53,8 @@ const UserPage = ({ auth }: userPageProps) => {
   const id = useId();
   const router = useRouter();
 
-  const formRef = useRef<ElementRef<"form">>(null);
+  // const formRef = useRef<ElementRef<"form">>(null);
+  // const inputRefs = useRef<Array<React.RefObject<HTMLInputElement>>>([]);
   const inputRef = useRef<ElementRef<"input">>(null);
 
   if (auth.currentUser === null) {
@@ -88,14 +90,11 @@ const UserPage = ({ auth }: userPageProps) => {
       }
     };
     fetchData();
-  }, [auth.currentUser?.uid, token]);
-
-  useEffect(() => {
-    console.log(uid);
-  }, [uid]);
+  }, [auth.currentUser?.uid, pageIndex]);
 
   const handleClick = async (index: number) => {
     setPageIndex(index);
+    console.log("index", index);
   };
 
   const playSound = (index: number) => {
@@ -110,24 +109,28 @@ const UserPage = ({ auth }: userPageProps) => {
   };
 
   const handlePlusClick = () => {
-    const newPageData = { ...pageData }; // pageData의 복사본을 만듭니다.
-    const newTodos = [...newPageData.titles[pageIndex].todos]; // 해당 페이지의 할 일 목록의 복사본을 만듭니다.
-    newTodos.push({
-      content: "",
-    }); // 빈 할 일을 추가합니다.
-    newPageData.titles[pageIndex].todos = newTodos; // 새로운 할 일 목록을 페이지 데이터에 할당합니다.
-    setPageData(newPageData); // 변경된 페이지 데이터를 상태에 업데이트합니다.
-  };
+    const newPageData = { ...pageData };
+    const newTodos = [...newPageData.titles[pageIndex].todos];
+    // console.log("newTodos", newTodos);
 
-  const onChangeValue = (index: number) => {
-    pageData.titles[pageIndex].todos[index];
-  };
+    try {
+      if (newTodos.length > 0 && newTodos[newTodos.length - 1].content === "") {
+        return toast.error("이미 생성된 메모가 공백 상태입니다.");
+      } else {
+        newTodos.push({
+          content: "",
+        });
+        newPageData.titles[pageIndex].todos = newTodos;
+        setPageData(newPageData);
 
-  const enableEditing = (index: number) => {
-    setTimeout(() => {
-      inputRef.current?.focus();
-      inputRef.current?.select();
-    });
+        setTimeout(() => {
+          inputRef.current?.focus();
+          inputRef.current?.select();
+        });
+      }
+    } catch (error) {
+      console.error("error", error);
+    }
   };
 
   const onBlur = async (
@@ -146,36 +149,56 @@ const UserPage = ({ auth }: userPageProps) => {
 
       newPageData.titles[pageIndex].todos = newTodos;
 
-      console.log("재료", { title, newValue, exTodo, token, uid });
+      // console.log("재료", { title, newValue, exTodo, token, uid });
 
-      await addTodo({ title, newValue, exTodo, token, uid });
+      const afterTodo = await addTodo({ title, newValue, exTodo, token, uid });
       setPageData(newPageData);
+      toast.success(afterTodo?.message);
     } catch (error) {
-      console.error("todo 생성오류", error);
+      // console.error("todo 생성오류", error);
+      toast.error("Todo 생성에 실패했습니다.");
     }
   };
 
-  const handleDelete = async () => {
+  const handleDelete = async (index: number) => {
     try {
       const newPageData = { ...pageData };
       const newTodos = [...newPageData.titles[pageIndex].todos];
-      const lastItem = newTodos[newTodos.length - 1].content;
 
-      /// todo 제거뒤 setPageData 오류 수정
-
-      if (lastItem.trim() === "") {
-        newTodos.pop();
-        console.log("blank", newPageData);
-        setPageData(newPageData);
-        return;
-      } else {
-        newTodos.pop();
-        await removeTodo(lastItem, uid);
-        console.log("noBlank", newPageData);
-        setPageData(newPageData);
+      if (newTodos.length > 0 && newTodos[newTodos.length - 1].content === "") {
+        newTodos.splice(index, 1);
+        setPageData({
+          ...newPageData,
+          titles: [
+            {
+              ...newPageData.titles[pageIndex],
+              todos: newTodos,
+            },
+          ],
+        });
+        return null;
       }
+
+      const willDeleteTodo = newTodos[index].content;
+      // console.log("text", willDeleteTodo);
+
+      newTodos.splice(index, 1);
+
+      setPageData({
+        ...newPageData,
+        titles: [
+          {
+            ...newPageData.titles[pageIndex],
+            todos: newTodos,
+          },
+        ],
+      });
+
+      await removeTodo(willDeleteTodo, uid);
+      toast.success("Todo 제거가 완료되었습니다.");
     } catch (error) {
       console.error("todo 제거 오류");
+      toast.error("Todo 제거에 실패했습니다.");
     }
   };
 
@@ -200,47 +223,43 @@ const UserPage = ({ auth }: userPageProps) => {
         <div className="flex justify-between -ml-2">
           <FcAcceptDatabase size="50px" />
           <h1 className="flex-1 text-2xl items-center ml-2 mt-2">
-            {pageData.titles[pageIndex].name}
+            {pageData.titles[pageIndex]?.name || ""}
           </h1>
           <button onClick={handlePlusClick}>
             <LuCopyPlus size={25} className="flex justify-end mt-2" />
           </button>
         </div>
 
-        <form action="" ref={formRef}>
-          {pageData.titles[pageIndex].todos.map((todo, index) => (
-            <div key={index}>
-              <div className="flex w-full h-[30px] justify-start space-x-2 mb-5 mt-5">
-                <Checkbox
-                  id={`${id}-${index}`}
-                  checked={
-                    checkedItems[pageIndex] && checkedItems[pageIndex][index]
-                  }
-                  onClick={() => playSound(index)}
-                  className="flex mr-3 items-center justify-center"
+        {pageData.titles[pageIndex].todos?.map((todo, index) => (
+          <div key={`key-${id}`}>
+            <div className="flex w-full h-[30px] justify-start space-x-2 mb-5 mt-5">
+              <Checkbox
+                id={`${id}-${index}`}
+                checked={
+                  checkedItems[pageIndex] && checkedItems[pageIndex][index]
+                }
+                onClick={() => playSound(index)}
+                className="flex mr-3 items-center justify-center"
+              />
+              <Label id={`${id}-${index}`} className="w-full">
+                <Input
+                  defaultValue={todo.content !== null ? todo.content : ""}
+                  className="text-md"
+                  // onClick={(event, index) => enableEditing(index)}
+                  onBlur={(event) => onBlur(event, index)}
                 />
-                <Label id={`${id}-${index}`} className="w-full">
-                  <Input
-                    ref={inputRef}
-                    defaultValue={todo.content}
-                    className="text-md"
-                    // onClick={(event, index) => enableEditing(index)}
-                    onBlur={(event) => onBlur(event, index)}
-                  />
-                </Label>
-                <div
-                  className="flex justify-end items-center cursor-pointer"
-                  onClick={handleDelete}
-                >
-                  <AiOutlineClose />
-                </div>
+              </Label>
+              <div
+                className="flex justify-end items-center cursor-pointer"
+                onClick={() => handleDelete(index)}
+              >
+                <AiOutlineClose />
               </div>
-
-              <hr className="w-full h-1 mt-4" />
             </div>
-          ))}
-        </form>
-        {/* TODO: content추가를 위한 +버튼 만들기 해당 버튼은 클릭시 해당 pageTitles의 content에 "" 빈문자열 데이터를 추가하며 setContent를 통해서도 빈문자열 데이터가 추가되어야한다. 해당 input태그 클릭시 수정이 가능해야하며 setContent로 해당 데이터를 변경하게 코드 생성. 이후 제거버튼(해당 index값을 이용)도 구현 */}
+
+            <hr className="w-full h-1 mt-4" />
+          </div>
+        ))}
       </article>
       <article className="w-1/4 h-9/10 bg-white rounded-xl p-3 relative">
         <Suspense fallback={<Spinner />}>

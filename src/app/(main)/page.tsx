@@ -7,9 +7,10 @@ import { firebaseConfig } from "@/config/firebase-config";
 import UserPage from "./(logged)/user-page";
 import Title from "./(_components)/title";
 import ExamplePage from "../(example)/example-page";
-import { verifyToken } from "@/libs/firebase/get-token";
-import { useEffect, useState } from "react";
+
+import { useEffect } from "react";
 import { getMessaging, onMessage } from "firebase/messaging";
+import { Toaster } from "sonner";
 
 const Page = () => {
   const firebaseApps = getApps();
@@ -97,6 +98,7 @@ const Page = () => {
       <button onClick={NotificationText}>push</button>
       <button onClick={handleClick2}>포그라운드 알림</button>
       <div className="bg-slate-100 flex flex-col max-w-6xl h-full mx-auto">
+        <Toaster />
         <Title auth={auth} />
         {auth.currentUser === null ? <ExamplePage /> : <UserPage auth={auth} />}
       </div>
