@@ -28,7 +28,6 @@ import { addTodo } from "@/actions/todos/add-todo";
 import { TitleWithTodos } from "@/libs/type";
 import { removeTodo } from "@/actions/todos/remove-todo";
 import { toast } from "sonner";
-import Todos from "./(_components)/todos";
 
 const poppins = Poppins({ subsets: ["latin"], weight: "500", style: "normal" });
 
@@ -60,7 +59,7 @@ const UserPage = ({ auth }: userPageProps) => {
   const { token, setUid, setToken } = useTokenWithUidStore();
   const userInfo = { token, uid };
 
-  // const id = useId();
+  const id = useId();
 
   // const formRef = useRef<ElementRef<"form">>(null);
   // const inputRefs = useRef<Array<React.RefObject<HTMLInputElement>>>([]);
@@ -94,6 +93,7 @@ const UserPage = ({ auth }: userPageProps) => {
         }
 
         setPageData(userData);
+        console.log("1111111111111111111");
       } catch (error) {
         console.error("데이터를 불러오는 중에 오류가 발생했습니다.", error);
       }
@@ -106,13 +106,22 @@ const UserPage = ({ auth }: userPageProps) => {
       const userData = await getTodos({ uid, token });
       await setPageData(userData);
 
-      // titleId가 다르기 때문에 해당하는 titleId를 찾아 해당 title의 todos데이터만 모아서 반환
-
       setPageIndex(index);
       console.log("pageData", pageData.titles);
     } catch (error) {
       console.log("페이지 변경중 오류 발생", error);
     }
+  };
+
+  const playSound = (index: number) => {
+    const newCheckedItems = [...checkedItems];
+    newCheckedItems[pageIndex][index] = !newCheckedItems[pageIndex][index];
+    setCheckedItems(newCheckedItems);
+    let audioFile = checkedItems[pageIndex][index]
+      ? "/tap-notification-180637.mp3"
+      : "/pop-39222.mp3";
+    const audio = new Audio(audioFile);
+    audio.play();
   };
 
   const handlePlusClick = () => {
@@ -137,6 +146,75 @@ const UserPage = ({ auth }: userPageProps) => {
       }
     } catch (error) {
       console.error("error", error);
+    }
+  };
+
+  const onBlur = async (
+    event: React.FocusEvent<HTMLInputElement>,
+    index: number,
+  ) => {
+    try {
+      const title = pageData.titles[pageIndex].name;
+      const exTodo = pageData.titles[pageIndex].todos[index].content;
+      const newValue = event.target.value;
+
+      const newPageData = { ...pageData };
+      const newTodos = [...newPageData.titles[pageIndex].todos];
+      const lastItemIndex = newTodos.length - 1;
+      newTodos[lastItemIndex].content = newValue;
+
+      newPageData.titles[pageIndex].todos = newTodos;
+
+      // console.log("재료", { title, newValue, exTodo, token, uid });
+
+      const afterTodo = await addTodo({ title, newValue, exTodo, token, uid });
+      setPageData(newPageData);
+      toast.success(afterTodo?.message);
+    } catch (error) {
+      // console.error("todo 생성오류", error);
+      toast.error("Todo 생성에 실패했습니다.");
+    }
+  };
+
+  const handleDelete = async (index: number) => {
+    try {
+      const newPageData = { ...pageData };
+      const newTodos = [...newPageData.titles[pageIndex].todos];
+
+      if (newTodos.length > 0 && newTodos[newTodos.length - 1].content === "") {
+        newTodos.splice(index, 1);
+        setPageData({
+          ...newPageData,
+          titles: [
+            {
+              ...newPageData.titles[pageIndex],
+              todos: newTodos,
+            },
+          ],
+        });
+        return null;
+      }
+
+      const willDeleteTodo = newTodos[index].content;
+      // console.log("text", willDeleteTodo);
+
+      newTodos.splice(index, 1);
+
+      setPageData({
+        ...newPageData,
+        titles: [
+          {
+            ...newPageData.titles[pageIndex],
+            todos: newTodos,
+          },
+        ],
+      });
+
+      await removeTodo(willDeleteTodo, uid);
+      toast.success("Todo 제거가 완료되었습니다.");
+    } catch (error) {
+      console.error("todo 제거 오류");
+      toast.error("Todo 제거에 실패했습니다.");
     }
   };
 
@@ -169,7 +247,38 @@ const UserPage = ({ auth }: userPageProps) => {
         </div>
 
         <Suspense fallback={<Spinner />}>
-          <Todos data={pageData} pageIndex={pageIndex} userInfo={userInfo} />
+          {pageData.titles[pageIndex] &&
+            pageData.titles[pageIndex].todos.map((todo, index) => (
+              <div key={`key-${index}-${id}`}>
+                <div className="flex w-full h-[30px] justify-start space-x-2 mb-5 mt-5">
+                  <Checkbox
+                    id={`${id}-${index}`}
+                    checked={
+                      checkedItems[pageIndex] && checkedItems[pageIndex][index]
+                    }
+                    onClick={() => playSound(index)}
+                    className="flex mr-3 items-center justify-center"
+                  />
+                  <Label id={`${id}-${index}`} className="w-full">
+                    <Input
+                      defaultValue={todo.content}
+                      // !== null ? todo.content : ""
+                      className="text-md"
+                      // onClick={(event, index) => enableEditing(index)}
+                      onBlur={(event) => onBlur(event, index)}
+                    />
+                  </Label>
+                  <div
+                    className="flex justify-end items-center cursor-pointer"
+                    onClick={() => handleDelete(index)}
+                  >
+                    <AiOutlineClose />
+                  </div>
+                </div>
+
+                <hr className="w-full h-1 mt-4" />
+              </div>
+            ))}
         </Suspense>
       </article>
       <article className="w-1/4 h-9/10 bg-white rounded-xl p-3 relative">

@@ -17,11 +17,12 @@ export const labelLists = [
 ];
 
 const Lists = ({ onClick }: ListsProps) => {
-  const [isActivated, setIsActivated] = useState<{ [key: number]: boolean }>(
-    {[0]: true},
-  );
+  const [isActivated, setIsActivated] = useState<{ [key: number]: boolean }>({
+    [0]: true,
+  });
 
   const handleClick = (index: number) => {
+    onClick(index);
     setIsActivated((prevState) => {
       const newState: { [key: number]: boolean } = {};
       Object.keys(prevState)
@@ -32,7 +33,6 @@ const Lists = ({ onClick }: ListsProps) => {
       newState[index] = true;
       return newState;
     });
-    onClick(index);
   };
 
   return (
