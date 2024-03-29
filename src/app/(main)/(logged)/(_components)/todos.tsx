@@ -1,15 +1,18 @@
 "use client";
 
 import { addTodo } from "@/actions/todos/add-todo";
+import { getTitleWithTodos } from "@/actions/todos/get-title-with-todos";
 import { removeTodo } from "@/actions/todos/remove-todo";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { TitleWithTodos } from "@/libs/type";
+import { TitleWithTodos, TitlesWithTodos } from "@/libs/type";
 import { useEffect, useId, useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import { toast } from "sonner";
 
+// TODO: state를 전체의 값을 불러오는 것으로 다시 변경 하고 불러와지는 값들의 순서를 db에서 재정립할지 정하기.
+// 불러온 전체의 값에서 동적으로 데이터들을 출력하는것으로 server 컴포넌트 사용 최소화할 것
 interface TodosProps {
   data: TitleWithTodos;
   pageIndex: number;
@@ -20,21 +23,56 @@ interface TodosProps {
 }
 
 const Todos = ({ data: prevPageData, pageIndex, userInfo }: TodosProps) => {
-  const [checkedItems, setCheckedItems] = useState<boolean[][]>([]);
-  const [pageData, setPageData] = useState<TitleWithTodos>(prevPageData);
+  const [checkedItems, setCheckedItems] = useState<boolean[]>([]);
+  const [pageData, setPageData] = useState<TitleWithTodos>({
+    title: {
+      name: "",
+      todos: [""],
+    },
+  });
 
   useEffect(() => {
-    console.log("asd", pageData);
-  }, []);
+    const fetchData = async () => {
+      try {
+        const titleWithTodos = await getTitleWithTodos(uid, pageIndex);
+
+        if (titleWithTodos) {
+          setPageData(titleWithTodos);
+        }
+        console.log("AAA", titleWithTodos);
+      } catch (error) {
+        console.log("페이지 변경중 오류 발생", error);
+      }
+    };
+    fetchData();
+  }, [pageIndex]);
+
+  useEffect(() => {
+    console.log("prevData", prevPageData);
+    const initialCheckedItems: boolean[] = [];
+    if (pageData) {
+      const todos = pageData.title.todos;
+      // console.log("todos", todos);
+      if (todos.length > 0 && todos !== undefined) {
+        const titleCheckedItems: boolean[] = new Array(todos.length).fill(
+          false,
+        );
+        initialCheckedItems.push(...titleCheckedItems);
+        setCheckedItems(initialCheckedItems);
+      } else {
+        return;
+      }
+    }
+  }, [pageData]);
 
   const id = useId();
   const { token, uid } = userInfo;
 
   const playSound = (index: number) => {
     const newCheckedItems = [...checkedItems];
-    newCheckedItems[pageIndex][index] = !newCheckedItems[pageIndex][index];
+    newCheckedItems[index] = !newCheckedItems[index];
     setCheckedItems(newCheckedItems);
-    let audioFile = checkedItems[pageIndex][index]
+    let audioFile = checkedItems[index]
       ? "/tap-notification-180637.mp3"
       : "/pop-39222.mp3";
     const audio = new Audio(audioFile);
@@ -46,16 +84,16 @@ const Todos = ({ data: prevPageData, pageIndex, userInfo }: TodosProps) => {
     index: number,
   ) => {
     try {
-      const title = pageData.titles[pageIndex].name;
-      const exTodo = pageData.titles[pageIndex].todos[index].content;
+      const title = pageData.title.name;
+      const exTodo = pageData.title.todos[index];
       const newValue = event.target.value;
 
       const newPageData = { ...pageData };
-      const newTodos = [...newPageData.titles[pageIndex].todos];
+      const newTodos = [...newPageData.title.todos];
       const lastItemIndex = newTodos.length - 1;
-      newTodos[lastItemIndex].content = newValue;
+      newTodos[lastItemIndex] = newValue;
 
-      newPageData.titles[pageIndex].todos = newTodos;
+      newPageData.title.todos = newTodos;
 
       // console.log("재료", { title, newValue, exTodo, token, uid });
 
@@ -71,35 +109,30 @@ const Todos = ({ data: prevPageData, pageIndex, userInfo }: TodosProps) => {
   const handleDelete = async (index: number) => {
     try {
       const newPageData = { ...pageData };
-      const newTodos = [...newPageData.titles[pageIndex].todos];
+      const newTodos = [...newPageData.title.todos];
 
-      if (newTodos.length > 0 && newTodos[newTodos.length - 1].content === "") {
+      if (newTodos.length > 0 && newTodos[newTodos.length - 1] === "") {
         newTodos.splice(index, 1);
         setPageData({
-          ...newPageData,
-          titles: [
-            {
-              ...newPageData.titles[pageIndex],
-              todos: newTodos,
-            },
-          ],
+          // ...newPageData,
+          title: {
+            name: newPageData.title.name,
+            todos: newTodos,
+          },
         });
         return null;
       }
 
-      const willDeleteTodo = newTodos[index].content;
+      const willDeleteTodo = newTodos[index];
       // console.log("text", willDeleteTodo);
 
       newTodos.splice(index, 1);
 
       setPageData({
-        ...newPageData,
-        titles: [
-          {
-            ...newPageData.titles[pageIndex],
-            todos: newTodos,
-          },
-        ],
+        title: {
+          name: newPageData.title.name,
+          todos: newTodos,
+        },
       });
 
       await removeTodo(willDeleteTodo, uid);
@@ -112,23 +145,21 @@ const Todos = ({ data: prevPageData, pageIndex, userInfo }: TodosProps) => {
 
   return (
     <>
-      {pageData.titles[pageIndex] &&
-        pageData.titles[pageIndex].todos.map((todo, index) => (
+      {pageData.title &&
+        pageData.title.todos.map((todo, index) => (
           <div key={`key-${index}-${id}`}>
             {/* <Suspense fallback={<Spinner />}> */}
 
             <div className="flex w-full h-[30px] justify-start space-x-2 mb-5 mt-5">
               <Checkbox
                 id={`${id}-${index}`}
-                checked={
-                  checkedItems[pageIndex] && checkedItems[pageIndex][index]
-                }
+                checked={checkedItems[index]}
                 onClick={() => playSound(index)}
                 className="flex mr-3 items-center justify-center"
               />
               <Label id={`${id}-${index}`} className="w-full">
                 <Input
-                  defaultValue={todo.content}
+                  defaultValue={todo}
                   // !== null ? todo.content : ""
                   className="text-md"
                   // onClick={(event, index) => enableEditing(index)}

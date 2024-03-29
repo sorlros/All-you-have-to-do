@@ -25,10 +25,11 @@ import { Auth } from "firebase/auth";
 import { getTodos } from "@/actions/todos/get-todos";
 import useTokenWithUidStore from "@/app/hooks/use-token-with-uid-store";
 import { addTodo } from "@/actions/todos/add-todo";
-import { TitleWithTodos } from "@/libs/type";
+import { TitleWithTodos, TitlesWithTodos } from "@/libs/type";
 import { removeTodo } from "@/actions/todos/remove-todo";
 import { toast } from "sonner";
 import Todos from "./(_components)/todos";
+import { getTitleWithTodos } from "@/actions/todos/get-title-with-todos";
 
 const poppins = Poppins({ subsets: ["latin"], weight: "500", style: "normal" });
 
@@ -46,15 +47,23 @@ const UserPage = ({ auth }: userPageProps) => {
   const uid = auth.currentUser?.uid as string;
 
   const [pageIndex, setPageIndex] = useState<number>(0);
-  const [checkedItems, setCheckedItems] = useState<boolean[][]>([]);
+  const [checkedItems, setCheckedItems] = useState<boolean[]>([]);
 
-  const [pageData, setPageData] = useState<TitleWithTodos>({
+  const [pageData, setPageData] = useState<TitlesWithTodos>({
     titles: [
-      {
-        name: "",
-        todos: [{ content: "" }],
-      },
+      { name: "주방", todos: [""] },
+      { name: "운동", todos: [""] },
+      { name: "목표", todos: [""] },
+      { name: "지출", todos: [""] },
+      { name: "기타", todos: [""] },
     ],
+  });
+
+  const [titleTodos, setTitleTodos] = useState<TitleWithTodos>({
+    title: {
+      name: "",
+      todos: [""],
+    },
   });
 
   const { token, setUid, setToken } = useTokenWithUidStore();
@@ -77,23 +86,28 @@ const UserPage = ({ auth }: userPageProps) => {
         setUid(auth.currentUser?.uid as string);
 
         // const uid = auth.currentUser?.uid as string;
-        const userData = await getTodos({ uid, token });
-        // setPageData(userData);
-        // console.log("data", userData);
-        const initialCheckedItems: boolean[][] = [];
-        const todos = userData.titles[0].todos;
+        // const userData = await getTodos({ uid, token });
+        const userData = await getTitleWithTodos(uid, pageIndex);
+        if (userData) {
+          setTitleTodos(userData);
+        }
+        console.log("data", userData);
+        const initialCheckedItems: boolean[] = [];
+        const todos = userData.title.todos;
 
         if (todos.length > 0) {
-          userData?.titles.forEach((title) => {
-            const titleCheckedItems = new Array(title.todos.length).fill(false);
-            initialCheckedItems.push(titleCheckedItems);
-          });
+          // userData?.titles.forEach((title) => {
+          const titleCheckedItems: boolean[] = new Array(todos.length).fill(
+            false,
+          );
+          initialCheckedItems.push(...titleCheckedItems);
+          // });
           setCheckedItems(initialCheckedItems);
         } else {
           return;
         }
 
-        setPageData(userData);
+        // setPageData(userData);
       } catch (error) {
         console.error("데이터를 불러오는 중에 오류가 발생했습니다.", error);
       }
@@ -101,18 +115,23 @@ const UserPage = ({ auth }: userPageProps) => {
     fetchData();
   }, []);
 
-  const handlePageChange = async (index: number) => {
-    try {
-      const userData = await getTodos({ uid, token });
-      await setPageData(userData);
+  const handlePageChange = (index: number) => {
+    setPageIndex(index);
+    // const userData = await getTodos({ uid, token });
+    //   const titleWithTodos = await getTitleWithTodos(uid, pageIndex);
 
-      // titleId가 다르기 때문에 해당하는 titleId를 찾아 해당 title의 todos데이터만 모아서 반환
+    //   if (titleWithTodos) {
+    //     setTitleTodos(titleWithTodos);
+    //   }
 
-      setPageIndex(index);
-      console.log("pageData", pageData.titles);
-    } catch (error) {
-      console.log("페이지 변경중 오류 발생", error);
-    }
+    //   console.log("AAA", titleWithTodos);
+
+    //   // titleId가 다르기 때문에 해당하는 titleId를 찾아 해당 title의 todos데이터만 모아서 반환
+
+    //   console.log("pageData", pageData.titles);
+    // } catch (error) {
+    //   console.log("페이지 변경중 오류 발생", error);
+    // }
   };
 
   const handlePlusClick = () => {
@@ -121,12 +140,10 @@ const UserPage = ({ auth }: userPageProps) => {
     // console.log("newTodos", newTodos);
 
     try {
-      if (newTodos.length > 0 && newTodos[newTodos.length - 1].content === "") {
+      if (newTodos.length > 0 && newTodos[newTodos.length - 1] === "") {
         return toast.error("이미 생성된 메모가 공백 상태입니다.");
       } else {
-        newTodos.push({
-          content: "",
-        });
+        newTodos.push("");
         newPageData.titles[pageIndex].todos = newTodos;
         setPageData(newPageData);
 
@@ -169,7 +186,7 @@ const UserPage = ({ auth }: userPageProps) => {
         </div>
 
         <Suspense fallback={<Spinner />}>
-          <Todos data={pageData} pageIndex={pageIndex} userInfo={userInfo} />
+          <Todos data={titleTodos} pageIndex={pageIndex} userInfo={userInfo} />
         </Suspense>
       </article>
       <article className="w-1/4 h-9/10 bg-white rounded-xl p-3 relative">

@@ -42,6 +42,8 @@ model Title {
   user          User?                @relation(fields: [uid], references: [uid])
   anonymousUser AnonymousUser?       @relation(fields: [uid, token], references: [uid, token])
   todos         Todo[]
+
+  @@unique([name, uid])
 }
 model Todo {
   id          String      @id @default(auto()) @map("_id") @db.ObjectId

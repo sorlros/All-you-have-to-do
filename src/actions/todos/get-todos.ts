@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/libs/prisma/db";
-import { TitleWithTodos } from "@/libs/type";
+import { TitlesWithTodos } from "@/libs/type";
 interface GetTodos {
   uid: string;
   token?: string;
@@ -26,12 +26,10 @@ export const getTodos = async ({ uid, token }: GetTodos) => {
       throw new Error(`UID ${uid}에 해당하는 사용자를 찾을 수 없습니다.`);
     }
 
-    const titleWithTodos: TitleWithTodos = {
+    const titleWithTodos: TitlesWithTodos = {
       titles: userWithData.titles.map((title) => ({
         name: title.name,
-        todos: title.todos.map((todo) => ({
-          content: todo.content,
-        })),
+        todos: title.todos.map((todo) => todo.content),
       })),
     };
 
