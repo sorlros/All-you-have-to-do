@@ -69,92 +69,52 @@ const UserPage = ({ auth }: userPageProps) => {
   const { token, setUid, setToken } = useTokenWithUidStore();
   const userInfo = { token, uid };
 
-  // const id = useId();
-
-  // const formRef = useRef<ElementRef<"form">>(null);
-  // const inputRefs = useRef<Array<React.RefObject<HTMLInputElement>>>([]);
   const inputRef = useRef<ElementRef<"input">>(null);
 
   useEffect(() => {
+    const getToken = async () => {
+      const token = await verifyToken();
+      if (token) {
+        setToken(token);
+      } else {
+        return console.error("토큰 오류");
+      }
+    };
+    getToken();
+  }, [uid, setToken]);
+
+  useEffect(() => {
+    const uid = auth.currentUser?.uid as string;
     const fetchData = async () => {
       try {
-        const token = await verifyToken();
-        if (token) {
-          setToken(token);
-        }
-        console.log("token", token);
         setUid(auth.currentUser?.uid as string);
 
-        // const uid = auth.currentUser?.uid as string;
-        // const userData = await getTodos({ uid, token });
         const userData = await getTitleWithTodos(uid, pageIndex);
         if (userData) {
           setTitleTodos(userData);
         }
-        console.log("data", userData);
+        // console.log("data", userData);
         const initialCheckedItems: boolean[] = [];
         const todos = userData.title.todos;
 
         if (todos.length > 0) {
-          // userData?.titles.forEach((title) => {
           const titleCheckedItems: boolean[] = new Array(todos.length).fill(
             false,
           );
           initialCheckedItems.push(...titleCheckedItems);
-          // });
           setCheckedItems(initialCheckedItems);
         } else {
           return;
         }
-
-        // setPageData(userData);
       } catch (error) {
         console.error("데이터를 불러오는 중에 오류가 발생했습니다.", error);
       }
     };
     fetchData();
-  }, []);
+  }, [uid, pageIndex]);
 
   const handlePageChange = (index: number) => {
     setPageIndex(index);
-    // const userData = await getTodos({ uid, token });
-    //   const titleWithTodos = await getTitleWithTodos(uid, pageIndex);
-
-    //   if (titleWithTodos) {
-    //     setTitleTodos(titleWithTodos);
-    //   }
-
-    //   console.log("AAA", titleWithTodos);
-
-    //   // titleId가 다르기 때문에 해당하는 titleId를 찾아 해당 title의 todos데이터만 모아서 반환
-
-    //   console.log("pageData", pageData.titles);
-    // } catch (error) {
-    //   console.log("페이지 변경중 오류 발생", error);
-    // }
-  };
-
-  const handlePlusClick = () => {
-    const newPageData = { ...pageData };
-    const newTodos = [...newPageData.titles[pageIndex].todos];
-    // console.log("newTodos", newTodos);
-
-    try {
-      if (newTodos.length > 0 && newTodos[newTodos.length - 1] === "") {
-        return toast.error("이미 생성된 메모가 공백 상태입니다.");
-      } else {
-        newTodos.push("");
-        newPageData.titles[pageIndex].todos = newTodos;
-        setPageData(newPageData);
-
-        setTimeout(() => {
-          inputRef.current?.focus();
-          inputRef.current?.select();
-        });
-      }
-    } catch (error) {
-      console.error("error", error);
-    }
   };
 
   return (
@@ -174,19 +134,16 @@ const UserPage = ({ auth }: userPageProps) => {
         <Lists onClick={(index) => handlePageChange(index)} />
         {/* <button onClick={btnClickHandler}>알림 보내기</button> */}
       </article>
-      <article className="w-2/4 h-9/10 bg-white rounded-xl p-9 pl-8">
+      <article className="w-2/4 h-9/10 bg-white rounded-xl p-9 pl-8 relative">
         <div className="flex justify-between -ml-2">
           <FcAcceptDatabase size="50px" />
           <h1 className="flex-1 text-2xl items-center ml-2 mt-2">
             {pageData.titles[pageIndex] && pageData.titles[pageIndex].name}
           </h1>
-          <button onClick={handlePlusClick}>
-            <LuCopyPlus size={25} className="flex justify-end mt-2" />
-          </button>
         </div>
 
         <Suspense fallback={<Spinner />}>
-          <Todos data={titleTodos} pageIndex={pageIndex} userInfo={userInfo} />
+          <Todos pageIndex={pageIndex} userInfo={userInfo} />
         </Suspense>
       </article>
       <article className="w-1/4 h-9/10 bg-white rounded-xl p-3 relative">

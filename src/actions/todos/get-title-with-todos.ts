@@ -42,7 +42,7 @@ export const getTitleWithTodos = async (uid: string, pageIndex: number) => {
           },
         };
 
-        console.log("result", result);
+        // console.log("result", result);
         return result;
       } else {
         throw new Error("db에서 titleWithTodos값을 얻지 못했습니다.");

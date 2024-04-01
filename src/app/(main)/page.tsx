@@ -37,10 +37,6 @@ const Page = () => {
     getPermission();
   }, []);
 
-  useEffect(() => {
-    console.log("currentUser", auth.currentUser);
-  }, []);
-
   // useEffect(() => {
   //   const myButton = document.querySelector("button");
   //   myButton.addEventListener("click", async () => {

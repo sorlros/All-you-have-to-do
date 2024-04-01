@@ -83,12 +83,12 @@ const Header = ({ auth }: HeaderProps) => {
   };
 
   useEffect(() => {
-    console.log(auth);
+    // console.log(auth);
     // onAuthStateChanged 함수를 사용하여 사용자 인증 상태의 변경을 감지합니다.
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         // 사용자가 로그인한 경우, user 객체를 통해 사용자 정보에 접근할 수 있습니다.
-        console.log("user", user);
+        // console.log("user", user);
         setUserId(user.displayName);
         setUid(user.uid);
         setUserPhoto(user.photoURL);
@@ -96,7 +96,7 @@ const Header = ({ auth }: HeaderProps) => {
         router.refresh();
       } else {
         // 사용자가 로그아웃한 경우 또는 인증되지 않은 경우
-        console.log("User is signed out");
+        // console.log("User is signed out");
         setUserId(null);
         setUserPhoto(null);
         setUid("");

@@ -1,9 +1,13 @@
-import { BeatLoader } from "react-spinners";
+import { BeatLoader, ClipLoader } from "react-spinners";
 
-export const Spinner = () => {
+interface SpinnerProps {
+  className?: string;
+}
+
+export const Spinner = ({ className }: SpinnerProps) => {
   return (
-    <div>
-      <BeatLoader />
+    <div className="flex justify-center items-center w-full h-full">
+      <ClipLoader className={className} />
     </div>
   );
 };

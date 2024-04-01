@@ -3,7 +3,6 @@
 import { db } from "@/libs/prisma/db";
 
 export const removeTodo = async (lastItem: string, uid: string) => {
-  console.log("serveritem", lastItem, uid);
   try {
     await db.todo.delete({
       where: {
