@@ -11,6 +11,7 @@ import ExamplePage from "../(example)/example-page";
 import { useEffect } from "react";
 import { getMessaging, onMessage } from "firebase/messaging";
 import { Toaster } from "sonner";
+import Swal from "sweetalert2";
 
 const Page = () => {
   const firebaseApps = getApps();
@@ -26,73 +27,63 @@ const Page = () => {
   const auth = getAuth();
 
   useEffect(() => {
-    const getPermission = async () => {
-      let permission = await Notification.requestPermission();
-      if (permission === "granted") {
-        console.log("granted");
+    // console.log("NOTI", Notification.permission);
+    const getAlert = function () {
+      if (Notification.permission === "granted") {
+        return console.log("granted");
       } else {
-        console.log("denied");
+        Swal.fire({
+          //message, callback
+          text: "이 웹사이트는 알람기능을 사용하기 위해 사용자의 동의가 필요합니다.",
+          showCancelButton: true,
+          allowOutsideClick: false,
+        }).then(async function (result) {
+          if (result.isConfirmed) {
+            let permission = await Notification.requestPermission();
+            if (permission === "granted") {
+              console.log("granted");
+            } else {
+              console.log("denied");
+            }
+          } else return;
+        });
       }
     };
-    getPermission();
+    getAlert();
   }, []);
 
-  // useEffect(() => {
-  //   const myButton = document.querySelector("button");
-  //   myButton.addEventListener("click", async () => {
-  //     let permission = await Notification.requestPermission();
-  //       if (permission === "granted") {
-  //         console.log("Notification permission granted. Requesting for token.");
-  //         let token = await messaging.getToken({
-  //           vapidKey: "<YOUR_PUBLIC_VAPID_KEY_HERE>",
-  //         });
-  //         // do something with the FCM token
-  //       } else {
-  //         console.log("Notification permission denied");
-  //         // Handle denied permission
-  //       }
+  // const NotificationText = () => {
+  //   const sendMessage = () => {
+  //     const title = "All you have to do!";
+  //     const body = "웹의 알람 기능을 사용하기 위해 권한 수락이 필요합니다.";
+  //     const icon = "/images/logo.png";
+  //     const options = { body, icon };
+
+  //     const notific = new Notification(title, options);
+  //   };
+
+  //   const handleClick = async () => {
+  //     const result = await Notification.requestPermission();
+
+  //     if (result === "granted") {
+  //       sendMessage();
+  //     } else {
+  //       return console.log("알림 권한을 얻지 못했습니다.");
+  //     }
+  //   };
+  //   return <button onClick={handleClick}>알림 보내기</button>;
+  // };
+
+  // const handleClick2 = () => {
+  //   const messaging = getMessaging(firebaseApp);
+  //   onMessage(messaging, (payload) => {
+  //     console.log("Message received. ", payload);
+  //     // ...
   //   });
-  // })
-
-  // onMessage(messaging, (payload) => {
-  //   console.log('Message received. ', payload);
-  //   // ...
-  // });
-
-  const NotificationText = () => {
-    const sendMessage = () => {
-      const title = "All you have to do!";
-      const body = "웹의 알람 기능을 사용하기 위해 권한 수락이 필요합니다.";
-      const icon = "/images/logo.png";
-      const options = { body, icon };
-
-      const notific = new Notification(title, options);
-    };
-
-    const handleClick = async () => {
-      const result = await Notification.requestPermission();
-
-      if (result === "granted") {
-        sendMessage();
-      } else {
-        return console.log("알림 권한을 얻지 못했습니다.");
-      }
-    };
-    return <button onClick={handleClick}>알림 보내기</button>;
-  };
-
-  const handleClick2 = () => {
-    const messaging = getMessaging(firebaseApp);
-    onMessage(messaging, (payload) => {
-      console.log("Message received. ", payload);
-      // ...
-    });
-  };
+  // };
 
   return (
     <main className="bg-slate-100 w-full h-full">
-      <button onClick={NotificationText}>push</button>
-      <button onClick={handleClick2}>포그라운드 알림</button>
       <div className="bg-slate-100 flex flex-col max-w-6xl h-full mx-auto">
         <Toaster />
         <Title auth={auth} />

@@ -59,7 +59,7 @@ export const addTodo = async ({
         if (newValue === "") return;
         const scheduleId = cuid();
 
-        await db.todo.create({
+        const createTodo = await db.todo.create({
           data: {
             uid,
             token,
@@ -69,6 +69,16 @@ export const addTodo = async ({
           },
         });
         console.log("todo 생성 완료");
+
+        if (createTodo) {
+          await db.schedule.create({
+            data: {
+              id: scheduleId,
+              uid,
+              token,
+            },
+          });
+        }
         return { message: "Todo가 생성되었습니다." };
       }
     }

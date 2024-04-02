@@ -16,7 +16,7 @@ import { useRouter } from "next/navigation";
 import { createAnonymousUser } from "@/libs/db/anonymous-user";
 import { HeaderTooltip } from "./tooltip";
 import { verifyToken } from "@/libs/firebase/get-token";
-import useTokenStore from "@/app/hooks/use-token-with-uid-store";
+import useTokenWithUidStore from "@/app/hooks/use-token-with-uid-store";
 
 interface HeaderProps {
   auth: Auth;
@@ -27,9 +27,8 @@ const Header = ({ auth }: HeaderProps) => {
 
   const [userId, setUserId] = useState<string | null>("");
   const [userPhoto, setUserPhoto] = useState<string | null>("");
-  const [uid, setUid] = useState<string>("");
 
-  const { token, setToken } = useTokenStore();
+  const { token, setToken, uid, setUid } = useTokenWithUidStore();
 
   const isAnonymous = auth.currentUser?.isAnonymous;
 
@@ -68,6 +67,7 @@ const Header = ({ auth }: HeaderProps) => {
           email: user.email,
           uid: user.uid,
         };
+        setUid(user.uid);
         const token = await verifyToken();
 
         if (token) {
@@ -83,7 +83,14 @@ const Header = ({ auth }: HeaderProps) => {
   };
 
   useEffect(() => {
-    // console.log(auth);
+    const getToken = async () => {
+      const token = await verifyToken();
+      if (token) {
+        setToken(token);
+      }
+    };
+    getToken();
+
     // onAuthStateChanged 함수를 사용하여 사용자 인증 상태의 변경을 감지합니다.
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -93,10 +100,10 @@ const Header = ({ auth }: HeaderProps) => {
         setUid(user.uid);
         setUserPhoto(user.photoURL);
         console.log("로그인 성공");
+        // console.log("token, uid", token, uid);
         router.refresh();
       } else {
         // 사용자가 로그아웃한 경우 또는 인증되지 않은 경우
-        // console.log("User is signed out");
         setUserId(null);
         setUserPhoto(null);
         setUid("");
@@ -106,7 +113,7 @@ const Header = ({ auth }: HeaderProps) => {
     });
     // cleanup 함수를 반환하여 컴포넌트가 언마운트될 때 구독을 해제합니다.
     return () => unsubscribe();
-  }, [auth, router]);
+  }, [auth, router, setUid, setToken, token, uid]);
 
   return (
     <div className="w-full h-[50px] flex justify-end items-center gap-2 p-5 pt-10">

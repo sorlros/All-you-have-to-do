@@ -51,6 +51,7 @@ export const getTitleWithTodos = async (uid: string, pageIndex: number) => {
       throw new Error("유효하지 않은 pageIndex입니다.");
     }
   } catch (error) {
-    throw new Error("getTitleWithTodos 실패");
+    // throw new Error("getTitleWithTodos 실패");
+    console.error(error);
   }
 };

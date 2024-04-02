@@ -64,8 +64,8 @@ model Schedule {
   uid           String    
   token         String       
   days          String[]
-  time          String
-  reiteration   Boolean
+  time          String?
+  reiteration   Boolean?
   
   todo          Todo?
 }
