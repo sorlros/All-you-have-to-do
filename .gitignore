@@ -26,7 +26,7 @@ yarn-error.log*
 
 # local env files
 .env*.local
-*.env
+.env
 
 # vercel
 .vercel
@@ -48,3 +48,6 @@ serviceAccountKey.json
 
 # https 
 *.pem
+
+# Local server
+server.js
