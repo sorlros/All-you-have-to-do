@@ -160,8 +160,12 @@ const Header = ({ auth }: HeaderProps) => {
               src="/images/anonymous.png"
               alt="anonymous"
               width={35}
-              height={35}
-              sizes="(min-width: 60em) 24vw, (min-width: 28em) 45vw, 100vw"
+              height={30}
+              style={{
+                width: "auto",
+                height: "auto",
+              }}
+              // sizes="(min-width: 60em) 24vw, (min-width: 28em) 45vw, 100vw"
             />
             <Button variant="ghost" size="sm" onClick={() => handleAnonymous()}>
               익명으로 로그인

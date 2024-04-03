@@ -15,6 +15,7 @@ export async function signInWithGoogle() {
     console.error("Error signing in with Google", error);
   }
 }
+process.env.NEXT;
 
 export async function signOut() {
   const auth = getAuth();

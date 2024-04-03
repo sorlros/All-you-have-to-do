@@ -9,6 +9,7 @@ import Image from "next/image";
 import { Poppins } from "next/font/google";
 import Lists from "../(main)/(_components)/lists";
 import { Spinner } from "@/components/spinner";
+import AlertMessage from "../(main)/(_components)/alert-message";
 
 const poppins = Poppins({ subsets: ["latin"], weight: "500", style: "normal" });
 
@@ -71,6 +72,7 @@ const ExamplePage = () => {
         poppins.className,
       )}
     >
+      <AlertMessage />
       <article className="w-1/4 h-9/10 bg-white rounded-xl mx-auto">
         <div className="flex flex-wrap w-full h-1/3 gap-2 items-center justify-center mx-auto p-3">
           <div className="w-[46%] h-2/5 bg-neutral-100 rounded-xl" />

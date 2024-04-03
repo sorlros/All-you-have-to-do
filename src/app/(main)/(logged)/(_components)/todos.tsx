@@ -3,6 +3,7 @@
 import { addTodo } from "@/actions/todos/add-todo";
 import { getTitleWithTodos } from "@/actions/todos/get-title-with-todos";
 import { removeTodo } from "@/actions/todos/remove-todo";
+import { useTimer } from "@/app/hooks/use-timer";
 import useTokenWithUidStore from "@/app/hooks/use-token-with-uid-store";
 import { Spinner } from "@/components/spinner";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -14,8 +15,6 @@ import { AiOutlineClose } from "react-icons/ai";
 import { LuCopyPlus } from "react-icons/lu";
 import { toast } from "sonner";
 
-// TODO: state를 전체의 값을 불러오는 것으로 다시 변경 하고 불러와지는 값들의 순서를 db에서 재정립할지 정하기.
-// 불러온 전체의 값에서 동적으로 데이터들을 출력하는것으로 server 컴포넌트 사용 최소화할 것
 interface TodosProps {
   pageIndex: number;
 }
@@ -23,6 +22,7 @@ interface TodosProps {
 const Todos = ({ pageIndex }: TodosProps) => {
   const { uid, token } = useTokenWithUidStore();
   const [checkedItems, setCheckedItems] = useState<boolean[]>([]);
+  const timer = useTimer();
   const [loading, setLoading] = useState<boolean>(false);
   const [pageData, setPageData] = useState<TitleWithTodos>({
     title: {
