@@ -3,6 +3,8 @@ import "./globals.css";
 import type { Metadata } from "next";
 import Head from "next/head";
 import { ReactNode } from "react";
+import { Toaster } from "sonner";
+import { ClientOnly } from "@/components/provider/client-only";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -97,7 +99,12 @@ const Layout = ({ children }: { children: ReactNode }) => {
         <meta name="msapplication-TileImage" content="/ms-icon-144x144.png" />
         <meta name="theme-color" content="#ffffff"></meta>
       </Head>
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <ClientOnly>
+          <Toaster />
+          <main className="bg-slate-100 w-full h-full">{children}</main>
+        </ClientOnly>
+      </body>
     </html>
   );
 };

@@ -4,7 +4,7 @@ import { getApps, initializeApp } from "firebase/app";
 import { Auth, getAuth } from "firebase/auth";
 import { firebaseConfig } from "@/config/firebase-config";
 
-import UserPage from "./(logged)/user-page";
+import UserPage from "./user/page";
 import Title from "./(_components)/title";
 import ExamplePage from "../(example)/example-page";
 
@@ -12,6 +12,7 @@ import { useEffect } from "react";
 import { getMessaging, onMessage } from "firebase/messaging";
 import { Toaster } from "sonner";
 import Swal from "sweetalert2";
+import { useRouter } from "next/navigation";
 
 const Page = () => {
   const firebaseApps = getApps();
@@ -24,6 +25,7 @@ const Page = () => {
     const messaging = getMessaging(firebaseApp);
   }
 
+  const router = useRouter();
   const auth = getAuth();
 
   useEffect(() => {
@@ -52,42 +54,12 @@ const Page = () => {
     getAlert();
   }, []);
 
-  // const NotificationText = () => {
-  //   const sendMessage = () => {
-  //     const title = "All you have to do!";
-  //     const body = "웹의 알람 기능을 사용하기 위해 권한 수락이 필요합니다.";
-  //     const icon = "/images/logo.png";
-  //     const options = { body, icon };
-
-  //     const notific = new Notification(title, options);
-  //   };
-
-  //   const handleClick = async () => {
-  //     const result = await Notification.requestPermission();
-
-  //     if (result === "granted") {
-  //       sendMessage();
-  //     } else {
-  //       return console.log("알림 권한을 얻지 못했습니다.");
-  //     }
-  //   };
-  //   return <button onClick={handleClick}>알림 보내기</button>;
-  // };
-
-  // const handleClick2 = () => {
-  //   const messaging = getMessaging(firebaseApp);
-  //   onMessage(messaging, (payload) => {
-  //     console.log("Message received. ", payload);
-  //     // ...
-  //   });
-  // };
-
   return (
     <main className="bg-slate-100 w-full h-full">
       <div className="bg-slate-100 flex flex-col max-w-6xl h-full mx-auto">
         <Toaster />
-        <Title auth={auth} />
-        {auth.currentUser === null ? <ExamplePage /> : <UserPage auth={auth} />}
+        <Title />
+        <ExamplePage />
       </div>
     </main>
   );

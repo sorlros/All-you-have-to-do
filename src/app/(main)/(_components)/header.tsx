@@ -19,7 +19,7 @@ import { verifyToken } from "@/libs/firebase/get-token";
 import useTokenWithUidStore from "@/app/hooks/use-token-with-uid-store";
 
 interface HeaderProps {
-  auth: Auth;
+  auth?: Auth;
 }
 
 const Header = ({ auth }: HeaderProps) => {
@@ -30,7 +30,7 @@ const Header = ({ auth }: HeaderProps) => {
 
   const { token, setToken, uid, setUid } = useTokenWithUidStore();
 
-  const isAnonymous = auth.currentUser?.isAnonymous;
+  const isAnonymous = auth?.currentUser?.isAnonymous;
 
   const handleAnonymous = async () => {
     try {
@@ -45,6 +45,7 @@ const Header = ({ auth }: HeaderProps) => {
         const token = await verifyToken();
         if (token) {
           setToken(token);
+          setUid(userInfo.uid);
           await createAnonymousUser(userInfo, token);
         } else {
           return console.log("토큰값이 존재하지 않습니다.");
@@ -52,6 +53,7 @@ const Header = ({ auth }: HeaderProps) => {
       }
       setUserId("익명의 사용자");
       setUserPhoto("/images/anonymous.png");
+      router.push("/user");
     } catch (error) {
       console.error(error);
     }
@@ -73,10 +75,12 @@ const Header = ({ auth }: HeaderProps) => {
         if (token) {
           setToken(token);
           await createUser(userInfo, token);
+          // router.push("/user");
         } else {
           return console.log("token이 존재하지 않습니다.");
         }
       }
+      router.push("/user");
     } catch (error) {
       console.error(error);
     }
@@ -92,27 +96,31 @@ const Header = ({ auth }: HeaderProps) => {
     getToken();
 
     // onAuthStateChanged 함수를 사용하여 사용자 인증 상태의 변경을 감지합니다.
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        // 사용자가 로그인한 경우, user 객체를 통해 사용자 정보에 접근할 수 있습니다.
-        // console.log("user", user);
-        setUserId(user.displayName);
-        setUid(user.uid);
-        setUserPhoto(user.photoURL);
-        console.log("로그인 성공");
-        // console.log("token, uid", token, uid);
-        router.refresh();
-      } else {
-        // 사용자가 로그아웃한 경우 또는 인증되지 않은 경우
-        setUserId(null);
-        setUserPhoto(null);
-        setUid("");
-        setToken("");
-        router.refresh();
-      }
-    });
-    // cleanup 함수를 반환하여 컴포넌트가 언마운트될 때 구독을 해제합니다.
-    return () => unsubscribe();
+    if (auth) {
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        if (user) {
+          // 사용자가 로그인한 경우, user 객체를 통해 사용자 정보에 접근할 수 있습니다.
+          // console.log("user", user);
+          setUserId(user.displayName);
+          setUid(user.uid);
+          setUserPhoto(user.photoURL);
+          console.log("로그인 성공");
+          // console.log("token, uid", token, uid);
+          router.refresh();
+        } else {
+          // 사용자가 로그아웃한 경우 또는 인증되지 않은 경우
+          setUserId(null);
+          setUserPhoto(null);
+          localStorage.setItem("token", "");
+          localStorage.setItem("uid", "");
+          setUid("");
+          setToken("");
+          router.push("/");
+        }
+      });
+      // cleanup 함수를 반환하여 컴포넌트가 언마운트될 때 구독을 해제합니다.
+      return () => unsubscribe();
+    }
   }, [auth, router, setUid, setToken, token, uid]);
 
   return (

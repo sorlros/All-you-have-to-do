@@ -1,3 +1,5 @@
+"use client";
+
 import {
   GoogleAuthProvider,
   getAuth,
@@ -15,13 +17,25 @@ export async function signInWithGoogle() {
     console.error("Error signing in with Google", error);
   }
 }
-process.env.NEXT;
+
+// export const signInWithGoogle = async () => {
+//   const router = useRouter();
+
+//   try {
+//     await signInWithGoogle();
+//     router.push("/user");
+//   } catch (error) {
+//     console.error("Error signing in with Google", error);
+//   }
+// };
 
 export async function signOut() {
   const auth = getAuth();
 
   try {
-    return auth.signOut();
+    //return auth.signOut();
+    auth.signOut();
+    console.log("로그아웃 이후 auth", auth);
   } catch (error) {
     console.error("Error signing out with Google", error);
   }
@@ -36,3 +50,14 @@ export async function signInAnonymous() {
     console.error(error);
   }
 }
+
+// export const signInAnonymous = async () => {
+//   const auth = getAuth();
+
+//   try {
+//     await signInAnonymous(auth);
+//     router.push("/user");
+//   } catch (error) {
+//     console.error("Error signing in anonymously", error);
+//   }
+// };

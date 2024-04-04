@@ -38,13 +38,17 @@ const Todos = ({ pageIndex }: TodosProps) => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const titleWithTodos = await getTitleWithTodos(uid, pageIndex);
+        if (uid !== "") {
+          const titleWithTodos = await getTitleWithTodos(uid, pageIndex);
+          console.log("초기 데이터", { titleWithTodos, uid, pageIndex });
 
-        if (titleWithTodos) {
-          setPageData(titleWithTodos);
-          setLoading(false);
-        } else {
-          toast.error("Todos를 불러오지 못했습니다.");
+          if (titleWithTodos) {
+            setPageData(titleWithTodos);
+            setLoading(false);
+          } else {
+            setLoading(false);
+            toast.error("Todos를 불러오지 못했습니다.");
+          }
           setLoading(false);
         }
       } catch (error) {

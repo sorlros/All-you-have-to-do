@@ -5,7 +5,7 @@ import localFont from "next/font/local";
 import { cn } from "@/libs/utils";
 
 interface TitleProps {
-  auth: Auth;
+  auth?: Auth;
 }
 
 const headingFont = localFont({
