@@ -5,6 +5,7 @@ import { getTitleWithTodos } from "@/actions/todos/get-title-with-todos";
 import { removeTodo } from "@/actions/todos/remove-todo";
 import { useTimer } from "@/app/hooks/use-timer";
 import useTokenWithUidStore from "@/app/hooks/use-token-with-uid-store";
+import TimerModal from "@/components/modal/timer-modal";
 import { Spinner } from "@/components/spinner";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -22,8 +23,9 @@ interface TodosProps {
 const Todos = ({ pageIndex }: TodosProps) => {
   const { uid, token } = useTokenWithUidStore();
   const [checkedItems, setCheckedItems] = useState<boolean[]>([]);
-  const timer = useTimer();
-  const [loading, setLoading] = useState<boolean>(false);
+  const timerModal = useTimer();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [modal, setModal] = useState(false);
   const [pageData, setPageData] = useState<TitleWithTodos>({
     title: {
       name: "",
@@ -36,7 +38,7 @@ const Todos = ({ pageIndex }: TodosProps) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
+      setIsLoading(true);
       try {
         if (uid !== "") {
           const titleWithTodos = await getTitleWithTodos(uid, pageIndex);
@@ -44,16 +46,16 @@ const Todos = ({ pageIndex }: TodosProps) => {
 
           if (titleWithTodos) {
             setPageData(titleWithTodos);
-            setLoading(false);
+            setIsLoading(false);
           } else {
-            setLoading(false);
+            setIsLoading(false);
             toast.error("Todos를 불러오지 못했습니다.");
           }
-          setLoading(false);
+          setIsLoading(false);
         }
       } catch (error) {
         console.log("페이지 변경중 오류 발생", error);
-        setLoading(false);
+        setIsLoading(false);
       }
     };
     fetchData();
@@ -76,6 +78,14 @@ const Todos = ({ pageIndex }: TodosProps) => {
     }
   }, [pageData]);
 
+  useEffect(() => {
+    if (modal) {
+      console.log("modal", modal);
+      timerModal.onOpen();
+      setModal(false);
+    }
+  }, [modal, timerModal]);
+
   const playSound = (index: number) => {
     const newCheckedItems = [...checkedItems];
     newCheckedItems[index] = !newCheckedItems[index];
@@ -85,13 +95,15 @@ const Todos = ({ pageIndex }: TodosProps) => {
       : "/pop-39222.mp3";
     const audio = new Audio(audioFile);
     audio.play();
+
+    setModal(true);
   };
 
   const onBlur = async (
     event: React.FocusEvent<HTMLInputElement>,
     index: number,
   ) => {
-    setLoading(true);
+    setIsLoading(true);
     try {
       const title = pageData.title.name;
       const exTodo = pageData.title.todos[index];
@@ -112,7 +124,7 @@ const Todos = ({ pageIndex }: TodosProps) => {
             todos: newTodos,
           },
         });
-        setLoading(false);
+        setIsLoading(false);
         return toast.error("공백은 저장할 수 없습니다.");
       }
 
@@ -120,16 +132,16 @@ const Todos = ({ pageIndex }: TodosProps) => {
 
       const afterTodo = await addTodo({ title, newValue, exTodo, token, uid });
       setPageData(newPageData);
-      setLoading(false);
+      setIsLoading(false);
       toast.success(afterTodo?.message);
     } catch (error) {
-      setLoading(false);
+      setIsLoading(false);
       toast.error("Todo 생성에 실패했습니다.");
     }
   };
 
   const handleDelete = async (index: number) => {
-    setLoading(true);
+    setIsLoading(true);
     try {
       const newPageData = { ...pageData };
       const newTodos = [...newPageData.title.todos];
@@ -142,7 +154,7 @@ const Todos = ({ pageIndex }: TodosProps) => {
             todos: newTodos,
           },
         });
-        setLoading(false);
+        setIsLoading(false);
       }
 
       const willDeleteTodo = newTodos[index];
@@ -156,23 +168,23 @@ const Todos = ({ pageIndex }: TodosProps) => {
       });
 
       await removeTodo(willDeleteTodo, uid);
-      setLoading(false);
+      setIsLoading(false);
       toast.success("Todo 제거가 완료되었습니다.");
     } catch (error) {
       console.error("todo 제거 오류");
-      setLoading(false);
+      setIsLoading(false);
       toast.error("Todo 제거에 실패했습니다.");
     }
   };
 
   const handlePlusClick = () => {
-    setLoading(true);
+    setIsLoading(true);
     const newPageData = { ...pageData };
     const newTodos = [...newPageData.title.todos];
 
     try {
       if (newTodos.length > 0 && newTodos[newTodos.length - 1] === "") {
-        setLoading(false);
+        setIsLoading(false);
         return toast.error("이미 생성된 메모가 공백 상태입니다.");
       } else {
         newTodos.push("");
@@ -186,15 +198,15 @@ const Todos = ({ pageIndex }: TodosProps) => {
             lastInputRef.select();
           }
         }, 0);
-        setLoading(false);
+        setIsLoading(false);
       }
     } catch (error) {
       console.error("error", error);
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex w-full h-[80%]">
         <Spinner />
@@ -212,7 +224,7 @@ const Todos = ({ pageIndex }: TodosProps) => {
       </button>
 
       {pageData.title &&
-        !loading &&
+        !isLoading &&
         pageData.title.todos.map((todo, index) => (
           <div key={`key-${index}-${id}`}>
             <div className="flex w-full h-[30px] justify-start space-x-2 mb-5 mt-5">

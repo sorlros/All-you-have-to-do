@@ -1,11 +1,11 @@
 import { create } from "zustand";
 
-type TimerStore = {
+interface TimerStore {
   isOpen: boolean;
   onOpen: () => void;
   onClose: () => void;
   toggle: () => void;
-};
+}
 
 export const useTimer = create<TimerStore>((set, get) => ({
   isOpen: false,

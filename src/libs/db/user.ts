@@ -32,7 +32,7 @@ export const createUser = async (userInfo: UserInfoProps, token: string) => {
         },
       });
       if (existingUser) {
-        return console.log("이미 계정이 존재해서 생성x");
+        return;
       } else {
         const user = await db.user.create({
           data: {

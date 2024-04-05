@@ -7,9 +7,8 @@ import { FcAcceptDatabase } from "react-icons/fc";
 
 import Image from "next/image";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useState } from "react";
 import { Spinner } from "@/components/spinner";
-import { useRouter } from "next/navigation";
 
 import { Auth, getAuth } from "firebase/auth";
 

@@ -5,6 +5,7 @@ import Head from "next/head";
 import { ReactNode } from "react";
 import { Toaster } from "sonner";
 import { ClientOnly } from "@/components/provider/client-only";
+import TimerModal from "@/components/modal/timer-modal";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -102,6 +103,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
       <body className={inter.className}>
         <ClientOnly>
           <Toaster />
+          <TimerModal />
           <main className="bg-slate-100 w-full h-full">{children}</main>
         </ClientOnly>
       </body>
