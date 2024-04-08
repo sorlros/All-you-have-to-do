@@ -8,7 +8,7 @@ import UserPage from "./user/page";
 import Title from "./(_components)/title";
 import ExamplePage from "../(example)/example-page";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getMessaging, onMessage } from "firebase/messaging";
 import { Toaster } from "sonner";
 import Swal from "sweetalert2";

@@ -4,6 +4,7 @@ import { addTodo } from "@/actions/todos/add-todo";
 import { getTitleWithTodos } from "@/actions/todos/get-title-with-todos";
 import { removeTodo } from "@/actions/todos/remove-todo";
 import { useTimer } from "@/app/hooks/use-timer";
+import useTimerStore from "@/app/hooks/use-timer-store";
 import useTokenWithUidStore from "@/app/hooks/use-token-with-uid-store";
 import TimerModal from "@/components/modal/timer-modal";
 import { Spinner } from "@/components/spinner";
@@ -32,6 +33,7 @@ const Todos = ({ pageIndex }: TodosProps) => {
       todos: [""],
     },
   });
+  const setContent = useTimerStore((state) => state.setContent);
 
   const inputRefs = useRef<any>({});
   const id = useId();
@@ -96,6 +98,8 @@ const Todos = ({ pageIndex }: TodosProps) => {
     const audio = new Audio(audioFile);
     audio.play();
 
+    const value = pageData.title.todos[index];
+    setContent(value);
     setModal(true);
   };
 

@@ -72,6 +72,10 @@ body,
   }
 }
 
+.time-item {
+  flex-direction: column;
+}
+
 /* @layer base {
   * {
     @apply border-border;

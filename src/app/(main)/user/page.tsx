@@ -7,7 +7,7 @@ import { FcAcceptDatabase } from "react-icons/fc";
 
 import Image from "next/image";
 
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Spinner } from "@/components/spinner";
 
 import { Auth, getAuth } from "firebase/auth";
@@ -37,7 +37,6 @@ const Page = () => {
   }
 
   const auth = getAuth();
-  const { uid, token } = useTokenWithUidStore();
 
   const [pageIndex, setPageIndex] = useState<number>(0);
 
