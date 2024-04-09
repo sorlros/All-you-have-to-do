@@ -15,21 +15,21 @@ import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
 
 const Page = () => {
-  const firebaseApps = getApps();
-  const firebaseApp =
-    firebaseApps.length === 0 ? initializeApp(firebaseConfig) : firebaseApps[0];
-  if (
-    typeof window !== "undefined" &&
-    typeof window.navigator !== "undefined"
-  ) {
-    const messaging = getMessaging(firebaseApp);
-    getToken(messaging, {
-      vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
-    });
-  }
+  // const firebaseApps = getApps();
+  // const firebaseApp =
+  //   firebaseApps.length === 0 ? initializeApp(firebaseConfig) : firebaseApps[0];
+  // if (
+  //   typeof window !== "undefined" &&
+  //   typeof window.navigator !== "undefined"
+  // ) {
+  //   const messaging = getMessaging(firebaseApp);
+  //   getToken(messaging, {
+  //     vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
+  //   });
+  // }
 
-  const router = useRouter();
-  const auth = getAuth();
+  // const router = useRouter();
+  // const auth = getAuth();
 
   useEffect(() => {
     // console.log("NOTI", Notification.permission);
