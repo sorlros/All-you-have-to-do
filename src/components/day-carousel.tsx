@@ -4,9 +4,11 @@ import React, { useState } from "react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import useTimerStore from "@/app/hooks/use-timer-store";
+import { cn } from "@/libs/utils";
 
 const DayCarousel = () => {
   const { setDay } = useTimerStore();
+  const [selectedItem, setSelectedItem] = useState<string>();
 
   const daysOfWeek = [
     "일요일",
@@ -21,17 +23,21 @@ const DayCarousel = () => {
   const dayItems = daysOfWeek.map((day, index) => (
     <div
       key={index}
-      className="flex items-center justify-center bg-white border border-gray-300 rounded p-4 cursor-pointer"
+      className={cn(
+        "flex items-center justify-center bg-white border border-gray-300 rounded p-4 cursor-pointer",
+        selectedItem === day
+          ? "bg-slate-500 hover:bg-slate-200"
+          : "hover:bg-slate-400 active:bg-slate-700",
+      )}
       onClick={() => handleDayClick(day)}
     >
       {day}
     </div>
   ));
 
-  // const dayItems = Array.
-
   const handleDayClick = (day: string) => {
     setDay(day);
+    setSelectedItem(day);
   };
 
   // 캐러셀의 설정을 정의합니다.

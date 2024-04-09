@@ -9,7 +9,7 @@ import Title from "./(_components)/title";
 import ExamplePage from "../(example)/example-page";
 
 import { useEffect, useState } from "react";
-import { getMessaging, onMessage } from "firebase/messaging";
+import { getMessaging, onMessage, getToken } from "firebase/messaging";
 import { Toaster } from "sonner";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
@@ -23,6 +23,9 @@ const Page = () => {
     typeof window.navigator !== "undefined"
   ) {
     const messaging = getMessaging(firebaseApp);
+    getToken(messaging, {
+      vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
+    });
   }
 
   const router = useRouter();

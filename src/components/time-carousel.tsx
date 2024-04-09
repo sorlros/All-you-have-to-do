@@ -4,15 +4,22 @@ import React, { useState } from "react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import useTimerStore from "@/app/hooks/use-timer-store";
+import { cn } from "@/libs/utils";
 
 // 선택된 요소 색상변경 다른 요소 선택시 색상 재배치 로직추가하기 day도
 const TimeCarousel = () => {
   const { setTime } = useTimerStore();
+  const [selectedItem, setSelectedItem] = useState<number>();
 
   const timeItems = Array.from({ length: 12 }).map((_, index) => (
     <div
       key={index}
-      className="flex items-center justify-center bg-white border border-gray-300 rounded p-4 cursor-pointer"
+      className={cn(
+        "flex items-center justify-center bg-white border border-gray-300 rounded p-4 cursor-pointer",
+        selectedItem === index
+          ? "bg-slate-500 hover:bg-slate-200"
+          : "hover:bg-slate-400 active:bg-slate-700",
+      )}
       onClick={() => handleClick(index)}
     >
       {index}:00
@@ -21,6 +28,7 @@ const TimeCarousel = () => {
 
   const handleClick = (index: number) => {
     setTime(`${index}:00`);
+    setSelectedItem(index);
   };
 
   // 캐러셀의 설정을 정의합니다.

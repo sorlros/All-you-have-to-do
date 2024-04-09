@@ -76,6 +76,7 @@ export const addTodo = async ({
               id: scheduleId,
               uid,
               token,
+              content: newValue,
             },
           });
         }

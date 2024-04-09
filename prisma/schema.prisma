@@ -61,9 +61,10 @@ model Todo {
 
 model Schedule {
   id            String    @id @map("_id")
-  uid           String    
-  token         String       
-  days          String[]
+  uid           String
+  token         String
+  content       String    @unique
+  day           String?
   time          String?
   reiteration   Boolean?
   

@@ -6,7 +6,6 @@ import { removeTodo } from "@/actions/todos/remove-todo";
 import { useTimer } from "@/app/hooks/use-timer";
 import useTimerStore from "@/app/hooks/use-timer-store";
 import useTokenWithUidStore from "@/app/hooks/use-token-with-uid-store";
-import TimerModal from "@/components/modal/timer-modal";
 import { Spinner } from "@/components/spinner";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -44,7 +43,7 @@ const Todos = ({ pageIndex }: TodosProps) => {
       try {
         if (uid !== "") {
           const titleWithTodos = await getTitleWithTodos(uid, pageIndex);
-          console.log("초기 데이터", { titleWithTodos, uid, pageIndex });
+          // console.log("초기 데이터", { titleWithTodos, uid, pageIndex });
 
           if (titleWithTodos) {
             setPageData(titleWithTodos);

@@ -10,6 +10,13 @@ export const removeTodo = async (lastItem: string, uid: string) => {
         content: lastItem,
       },
     });
+
+    await db.schedule.delete({
+      where: {
+        uid,
+        content: lastItem,
+      },
+    });
     console.log("todo 제거 완료");
   } catch (error) {
     console.error("error", error);
