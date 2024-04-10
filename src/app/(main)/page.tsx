@@ -56,20 +56,20 @@ const Page = () => {
     };
     getAlert();
 
-    const firebaseApps = getApps();
-    const firebaseApp =
-      firebaseApps.length === 0
-        ? initializeApp(firebaseConfig)
-        : firebaseApps[0];
-    if (
-      typeof window !== "undefined" &&
-      typeof window.navigator !== "undefined"
-    ) {
-      const messaging = getMessaging(firebaseApp);
-      getToken(messaging, {
-        vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
-      });
-    }
+    // const firebaseApps = getApps();
+    // const firebaseApp =
+    //   firebaseApps.length === 0
+    //     ? initializeApp(firebaseConfig)
+    //     : firebaseApps[0];
+    // if (
+    //   typeof window !== "undefined" &&
+    //   typeof window.navigator !== "undefined"
+    // ) {
+    //   const messaging = getMessaging(firebaseApp);
+    //   getToken(messaging, {
+    //     vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
+    //   });
+    // }
   }, []);
 
   return (

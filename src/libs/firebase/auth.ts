@@ -35,7 +35,6 @@ export async function signOut() {
   try {
     //return auth.signOut();
     auth.signOut();
-    console.log("로그아웃 이후 auth", auth);
   } catch (error) {
     console.error("Error signing out with Google", error);
   }
