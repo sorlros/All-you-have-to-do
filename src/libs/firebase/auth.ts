@@ -8,26 +8,26 @@ import {
 } from "firebase/auth";
 
 export async function signInWithGoogle() {
-  const provider = new GoogleAuthProvider();
+  const provider = new GoogleAuthProvider(); // Use 'GoogleAuthProvider' directly
   const auth = getAuth();
-
+  provider.setCustomParameters({ prompt: "select_account" });
   try {
-    return await signInWithPopup(auth, provider);
+    return await signInWithPopup(auth, provider); // Use 'provider' directly here
   } catch (error) {
     console.error("Error signing in with Google", error);
   }
 }
 
-// export const signInWithGoogle = async () => {
-//   const router = useRouter();
+// export async function signInWithGoogle() {
+//   const provider = new GoogleAuthProvider();
+//   const auth = getAuth();
 
 //   try {
-//     await signInWithGoogle();
-//     router.push("/user");
+//     return await signInWithPopup(auth, provider);
 //   } catch (error) {
 //     console.error("Error signing in with Google", error);
 //   }
-// };
+// }
 
 export async function signOut() {
   const auth = getAuth();
@@ -49,14 +49,3 @@ export async function signInAnonymous() {
     console.error(error);
   }
 }
-
-// export const signInAnonymous = async () => {
-//   const auth = getAuth();
-
-//   try {
-//     await signInAnonymous(auth);
-//     router.push("/user");
-//   } catch (error) {
-//     console.error("Error signing in anonymously", error);
-//   }
-// };
