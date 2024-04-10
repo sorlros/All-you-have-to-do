@@ -87,14 +87,6 @@ const Header = ({ auth }: HeaderProps) => {
   };
 
   useEffect(() => {
-    const getToken = async () => {
-      const token = await verifyToken();
-      if (token) {
-        setToken(token);
-      }
-    };
-    getToken();
-
     // onAuthStateChanged 함수를 사용하여 사용자 인증 상태의 변경을 감지합니다.
     if (auth) {
       const unsubscribe = onAuthStateChanged(auth, (user) => {
