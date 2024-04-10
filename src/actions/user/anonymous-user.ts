@@ -1,7 +1,7 @@
 "use server";
 
 import { PrismaClient } from "@prisma/client";
-import { db } from "../prisma/db";
+import { db } from "../../libs/prisma/db";
 
 export interface UserInfoProps {
   displayName: string | null;
@@ -9,7 +9,10 @@ export interface UserInfoProps {
   uid: string;
 }
 
-export const createAnonymousUser = async (userInfo: UserInfoProps, token: string) => {
+export const createAnonymousUser = async (
+  userInfo: UserInfoProps,
+  token: string,
+) => {
   const prisma = new PrismaClient();
 
   // console.log("받아온 userInfo", userInfo);
@@ -22,7 +25,7 @@ export const createAnonymousUser = async (userInfo: UserInfoProps, token: string
   }
 
   if (typeof token !== "string") {
-    throw new Error("토큰이 유효하지 않습니다.")
+    throw new Error("토큰이 유효하지 않습니다.");
   }
 
   const { uid } = userInfo;
@@ -35,12 +38,12 @@ export const createAnonymousUser = async (userInfo: UserInfoProps, token: string
       data: {
         uid,
         token,
-        createdAt
-      }
-    })
-    
-    console.log("익명 유저 생성 완료")
+        createdAt,
+      },
+    });
+
+    console.log("익명 유저 생성 완료");
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
 };

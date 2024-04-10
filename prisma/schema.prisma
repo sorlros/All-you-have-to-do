@@ -18,7 +18,7 @@ model User {
   uid      String    @unique
   email    String
   name     String
-  token    String
+  token    String[]
 
   titles    Title[]
 }

@@ -1,17 +1,20 @@
+import { db } from "@/libs/prisma/db";
+
 // 나중에 api 호출할 때 함께 전달할 데이터
 interface NotificationData {
   data: {
-    id: string;
+    // id: string;
     uid: string;
-    token: string;
+    // token: string;
     content: string;
+    image: string;
     time: string;
   };
 }
 
 const admin = require("firebase-admin");
 
-const sendFCMNotification = async (data: NotificationData) => {
+export const sendFCMNotification = async ({ data }: NotificationData) => {
   const serviceAccount = require("/serviceAccountKey.json");
 
   if (!admin.apps.length) {
@@ -20,24 +23,27 @@ const sendFCMNotification = async (data: NotificationData) => {
     });
   }
 
-  // 토큰 불러오기
-  // 앞서 푸시 권한과 함께 발급받아 저장해둔 토큰들을 모조리 불러온다.
-  // 본인에게 익숙한 방법으로 저장하고 불러오면 된다.
-  // 내 경우 firestore에 저장하고 불러오도록 했다.
-  // let tokenList: Array<string> = [];
-  // const docRef = doc(db, "subscribe", "tokens");
-
-  // await getDoc(docRef).then((doc) => {
-  //   tokenList = doc?.data()?.list;
-  // });
-
-  // if (tokenList.length === 0) return;
-
   // 푸시 데이터
   // api 호출할 때 받아올 데이터와 방금 불러온 토큰
+  let tokenList: Array<string> = [];
+  const user = await db.user.findUnique({
+    where: {
+      uid: data.uid,
+    },
+    select: {
+      token: true,
+    },
+  });
+
+  if (user) {
+    tokenList = user.token;
+  } else {
+    return;
+  }
+
   const notificationData = {
     ...data,
-    // tokens: tokenList,
+    tokens: tokenList,
   };
 
   // 푸시 발송

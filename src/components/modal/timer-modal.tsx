@@ -22,10 +22,10 @@ const TimerModal = () => {
   const { content, setContent, time, day } = useTimerStore();
   const { uid, token } = useTokenWithUidStore();
 
-  useEffect(() => {
-    console.log("time&day", time, day);
-    console.log("content", content);
-  }, [time, day, content]);
+  // useEffect(() => {
+  //   console.log("time&day", time, day);
+  //   console.log("content", content);
+  // }, [time, day, content]);
 
   const handleSubmit = async () => {
     if (content === "" || time === "" || day === "") {
