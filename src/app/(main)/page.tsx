@@ -65,10 +65,30 @@ const Page = () => {
       typeof window !== "undefined" &&
       typeof window.navigator !== "undefined"
     ) {
-      const messaging = getMessaging(firebaseApp);
+      const messaging = getMessaging();
+
       getToken(messaging, {
         vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
+      }).then((currentToken: string) => {
+        if (currentToken) {
+          console.log("기기 등록 성공");
+        } else {
+          console.log("기기 등록 실패");
+        }
       });
+    }
+  }, []);
+
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("/firebase-messaging-sw.js")
+        .then((registration) => {
+          console.log("Service Worker registered.");
+        })
+        .catch((error) => {
+          console.error("Service Worker registration failed:", error);
+        });
     }
   }, []);
 

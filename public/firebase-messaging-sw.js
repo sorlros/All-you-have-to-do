@@ -12,17 +12,47 @@ firebase.initializeApp({
   storageBucket: "all-you-have-to-do.appspot.com",
   messagingSenderId: "28080972325",
   appId: "1:28080972325:web:2968ca49bf317747a195cc",
-  measurementId: "G-QTMJX6MW8L",
 });
 
 const messaging = firebase.messaging();
+messaging
+  .getToken({
+    vapidKey:
+      "BCj13Blch9Y6RxMwcSniqVtp37yQRmiV2-JcNd91tyo9kc3AJpenwQPUBz1SZA8K-TwbJcJr8c1Cxt1gGBg0pMo",
+  })
+  .then((currentToken) => {
+    if (currentToken) {
+      console.log("기기 등록 성공");
+    } else {
+      console.log(
+        "No registration token available. Request permission to generate one.",
+      );
+    }
+  })
+  .catch((err) => {
+    console.log("An error occurred while retrieving token. ", err);
+  });
 
 self.addEventListener("push", function (event) {
-  // 받은 푸시 데이터를 처리해 알림으로 띄우는 내용
+  if (event.data) {
+    const data = event.data.json().data;
+    const options = {
+      body: data.content,
+      icon: data.image,
+      image: data.image,
+    };
+
+    event.waitUntil(self.registration.showNotification(data.title, options));
+  } else {
+    console.log("This push event has no data.");
+  }
 });
 
-self.addEventListener("notificationclick", {
+self.addEventListener("notificationclick", function (event) {
   // 띄운 알림창을 클릭했을 때 처리할 내용
+  event.preventDefault();
+  // 알림창 닫기
+  event.notification.close();
 });
 
 messaging.onBackgroundMessage((payload) => {
@@ -39,104 +69,3 @@ messaging.onBackgroundMessage((payload) => {
 
   self.registration.showNotification(notificationTitle, notificationOptions);
 });
-
-// if (typeof window !== "undefined" && typeof window.navigator !== "undefined") {
-//   const messaging = getMessaging(firebaseApp);
-
-//   messaging.onBackgroundMessage((payload) => {
-//     console.log('[firebase-messaging-sw.js] Received background message ', payload);
-//     // Customize notification here
-//     const notificationTitle = 'Background Message Title';
-//     const notificationOptions = {
-//       body: 'Background Message body.',
-//       icon: '/firebase-logo.png'
-//     };
-
-//     self.registration.showNotification(notificationTitle,
-//       notificationOptions);
-//   });
-// }
-// if (typeof window !== "undefined" && typeof window.navigator !== "undefined") {
-//   const messaging = getMessaging(firebaseApp);
-
-//   messaging.onBackgroundMessage((payload) => {
-//     console.log('[firebase-messaging-sw.js] Received background message ', payload);
-//     // Customize notification here
-//     const notificationTitle = 'Background Message Title';
-//     const notificationOptions = {
-//       body: 'Background Message body.',
-//       icon: '/firebase-logo.png'
-//     };
-
-//     self.registration.showNotification(notificationTitle,
-//       notificationOptions);
-//   });
-// }
-
-// if (window.registration) {
-//   // registration 속성이 존재할 때만 실행되는 코드
-// }
-
-// self.addEventListener("install", function (e) {
-//   console.log("fcm sw install..");
-//   self.skipWaiting();
-// });
-
-// self.addEventListener("activate", function (e) {
-//   console.log("fcm sw activate..");
-// });
-
-// self.addEventListener("push", function (e) {
-//   if (!e.data.json()) return;
-
-//   const resultData = e.data.json().notification;
-//   const notificationTitle = resultData.title;
-//   const notificationOptions = {
-//     body: resultData.body,
-//     icon: resultData.image, // 웹 푸시 이미지는 icon
-//     tag: resultData.tag,
-//   };
-
-//   self.registration.showNotification(notificationTitle, notificationOptions);
-// });
-
-// self.addEventListener("notificationclick", function (event) {
-//   console.log("notification click");
-//   const url = "/";
-//   event.notification.close();
-//   event.waitUntil(clients.openWindow(url));
-// });
-
-// // if (typeof window !== "undefined" && typeof window.navigator !== "undefined") {
-// //   const messaging = getMessaging(firebaseApp);
-// // }
-
-// const messaging = firebase.messaging();
-
-// // messaging.onBackgroundMessage();
-
-// // const app = firebase.initializeApp(firebaseConfig);
-
-// // firebase.messaging().onBackgroundMessage((payload) => {
-// //   return self.registration.showNotification(payload.notification.title, {
-// //     body: payload.notification.body,
-// //   });
-// // });
-
-// // const messaging = getMessaging(firebaseConfig);
-
-// // firebase-messaging-sw.js
-
-// // Empty service worker script that only handles messaging events
-// // self.addEventListener("push", function (event) {
-// //   // Handle push notifications here
-// //   const notification = event.data.json();
-// //   self.registration.showNotification(notification.title, notification);
-// // });
-
-// // self.addEventListener("notificationclick", function (event) {
-// //   // Handle notification clicks here
-// //   const notification = event.notification;
-// //   notification.close();
-// //   // Add your custom click handling logic here
-// // });
