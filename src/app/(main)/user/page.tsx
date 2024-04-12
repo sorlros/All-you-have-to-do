@@ -17,7 +17,6 @@ import Title from "../(_components)/title";
 import { getApps, initializeApp } from "firebase/app";
 import { firebaseConfig } from "@/config/firebase-config";
 import { getMessaging } from "firebase/messaging";
-import useTokenWithUidStore from "@/app/hooks/use-token-with-uid-store";
 
 const poppins = Poppins({ subsets: ["latin"], weight: "500", style: "normal" });
 
@@ -53,6 +52,19 @@ const Page = () => {
   const handlePageChange = (index: number) => {
     setPageIndex(index);
   };
+
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("/firebase-messaging-sw.js")
+        .then((registration) => {
+          console.log("Service Worker registered.");
+        })
+        .catch((error) => {
+          console.error("Service Worker registration failed:", error);
+        });
+    }
+  }, []);
 
   return (
     <>

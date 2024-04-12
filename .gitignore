@@ -51,3 +51,6 @@ serviceAccountKey.json
 
 # Local server
 server.js
+
+# Firebase Service Worker
+/public/firebase-messaging-sw.js

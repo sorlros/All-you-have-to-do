@@ -1,7 +1,6 @@
 "use server";
 
 import { db } from "@/libs/prisma/db";
-
 interface AlarmProps {
   content: string;
   time: string;
@@ -31,6 +30,6 @@ export const createAlarm = async ({ content, time, day, uid }: AlarmProps) => {
       });
     }
   } catch (error) {
-    throw new Error("scheduleId 조회 실패");
+    console.error(error);
   }
 };

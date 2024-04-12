@@ -15,6 +15,15 @@ import useTokenWithUidStore from "@/app/hooks/use-token-with-uid-store";
 import { createAlarm } from "@/actions/alarm/create-alaram";
 import { sendFCMNotification } from "@/actions/send-fcm";
 
+interface NotificationData {
+  data: {
+    title: string;
+    body: string;
+    image: string;
+    icon: string;
+  };
+}
+
 const TimerModal = () => {
   const timerModal = useTimer();
   const isOpen = useTimer((state) => state.isOpen);
@@ -42,9 +51,18 @@ const TimerModal = () => {
         time: time,
       };
 
+      const notificationData: NotificationData = {
+        data: {
+          title: "AA",
+          body: content,
+          icon: "/logo.png",
+          image: "/logo.png",
+        },
+      };
+
       await createAlarm({ content, time, day, uid });
 
-      await sendFCMNotification({ data });
+      await sendFCMNotification(notificationData, data.uid);
       timerModal.onClose();
       toast.success("알람을 생성했습니다.");
     } catch (error) {

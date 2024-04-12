@@ -33,8 +33,16 @@ messaging
     console.log("An error occurred while retrieving token. ", err);
   });
 
+  if (admin.messaging.data) {
+    console.log("데이터 전송", admin.messaging.data)
+  } else {
+    console.log("데이터 못받음")
+  }
+
+
 self.addEventListener("push", function (event) {
-  if (event.data) {
+  console.log("123123");
+  if (event.data.json().notification) {
     const data = event.data.json().data;
     const options = {
       body: data.content,
@@ -60,6 +68,8 @@ messaging.onBackgroundMessage((payload) => {
     "[firebase-messaging-sw.js] Received background message ",
     payload,
   );
+  const data = messaging.payload;
+  console.log(data)
   // Customize notification here
   const notificationTitle = "Background Message Title";
   const notificationOptions = {
