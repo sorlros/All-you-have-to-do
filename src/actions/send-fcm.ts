@@ -3,27 +3,15 @@
 import { db } from "@/libs/prisma/db";
 import admin from "firebase-admin";
 import { MessagePayload, getMessaging } from "firebase/messaging";
-// 나중에 api 호출할 때 함께 전달할 데이터
-// interface NotificationData {
-//   data: {
-//     uid: string;
-//     content: string;
-//     image: string;
-//     time: string;
-//   };
-// }
+// import { HttpRequest } from "firebase-admin/remote-config";
 
 interface NotificationData {
-  data: {
-    title: string;
-    body: string;
-    image: string;
-    icon: string;
-  };
-}
-
-interface UserData {
   uid: string;
+  title: string;
+  body: string;
+  image: string;
+  icon: string;
+  time: string;
 }
 
 const serviceAccount = require("/serviceAccountKey.json");
@@ -39,17 +27,14 @@ const initializeFirebaseApp = () => {
   }
 };
 
-export const sendFCMNotification = async (
-  { data }: NotificationData,
-  uid: string,
-) => {
+export const sendFCMNotification = async (data: NotificationData) => {
   try {
     initializeFirebaseApp();
 
     let tokenList: Array<string> = [];
     const user = await db.user.findUnique({
       where: {
-        uid,
+        uid: data.uid,
       },
       select: {
         token: true,
@@ -69,12 +54,8 @@ export const sendFCMNotification = async (
     };
 
     const response = await admin.messaging().sendMulticast(message);
-    // getMessaging().sendMulticast(message)
+    // console.log("response", response);
 
-    // console.log("RESPONSE", response);
-    // if (response) {
-    //   console.log("response error", response.responses[0].error);
-    // }
     return response;
   } catch (error) {
     console.error("FCM 푸시 알림 실패");

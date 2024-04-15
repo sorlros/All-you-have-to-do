@@ -14,17 +14,31 @@ import { toast } from "sonner";
 import useTokenWithUidStore from "@/app/hooks/use-token-with-uid-store";
 import { createAlarm } from "@/actions/alarm/create-alaram";
 import { sendFCMNotification } from "@/actions/send-fcm";
-
+import {
+  MessagePayload,
+  getMessaging,
+  getToken,
+  onMessage,
+} from "firebase/messaging";
+import { getApps, initializeApp } from "firebase/app";
+import Image from "next/image";
+import useSendPush from "@/app/hooks/use-send-push";
+import { firebaseConfig } from "@/config/firebase-config";
+import { initializingApp } from "@/libs/initialize-app";
 interface NotificationData {
   data: {
+    uid: string;
     title: string;
     body: string;
     image: string;
     icon: string;
+    time: string;
   };
 }
 
 const TimerModal = () => {
+  initializingApp();
+
   const timerModal = useTimer();
   const isOpen = useTimer((state) => state.isOpen);
   const [isClick, setIsClick] = useState("");
@@ -32,10 +46,27 @@ const TimerModal = () => {
   const { content, setContent, time, day } = useTimerStore();
   const { uid, token } = useTokenWithUidStore();
 
-  // useEffect(() => {
-  //   console.log("time&day", time, day);
-  //   console.log("content", content);
-  // }, [time, day, content]);
+  const sendPush = useSendPush();
+
+  const appendMessage = (payload: MessagePayload) => {
+    return (
+      <div className="flex w-[500px] h-[300px]">
+        <Image alt="logo" src="/images/logo.png" />
+        <h5>Received message: {payload.notification?.title}</h5>
+        <span>{payload.notification?.body}</span>
+      </div>
+    );
+  };
+
+  useEffect(() => {
+    const messaging = getMessaging();
+
+    onMessage(messaging, (payload) => {
+      console.log("메세지 받음", payload);
+
+      appendMessage(payload);
+    });
+  }, []);
 
   const handleSubmit = async () => {
     if (content === "" || time === "" || day === "") {
@@ -44,25 +75,27 @@ const TimerModal = () => {
 
     try {
       const { content, time, day } = useTimerStore.getState();
-      const data = {
-        uid: uid, // 또는 uid,
-        content: content,
-        image: "/images/logo.png",
-        time: time,
-      };
+      const { uid } = useTokenWithUidStore.getState();
 
-      const notificationData: NotificationData = {
-        data: {
-          title: "AA",
-          body: content,
-          icon: "/logo.png",
-          image: "/logo.png",
-        },
+      const data = {
+        uid,
+        title: "title",
+        body: content,
+        image: "/icon-192x192.png",
+        icon: "/icon-192x192.png",
+        time: time,
       };
 
       await createAlarm({ content, time, day, uid });
 
-      await sendFCMNotification(notificationData, data.uid);
+      // const message = await sendFCMNotification(data, uid);
+      // console.log("handleMessage", message);
+
+      // onMessage(messaging, (message) => {
+      //   console.log("asdasd", message);
+      // });
+      await sendFCMNotification(data);
+
       timerModal.onClose();
       toast.success("알람을 생성했습니다.");
     } catch (error) {

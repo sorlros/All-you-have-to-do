@@ -14,9 +14,13 @@ import { Auth, getAuth } from "firebase/auth";
 
 import Todos from "./(_components)/todos";
 import Title from "../(_components)/title";
-import { getApps, initializeApp } from "firebase/app";
-import { firebaseConfig } from "@/config/firebase-config";
-import { getMessaging } from "firebase/messaging";
+import { initializingApp } from "@/libs/initialize-app";
+import {
+  MessagePayload,
+  getMessaging,
+  getToken,
+  onMessage,
+} from "firebase/messaging";
 
 const poppins = Poppins({ subsets: ["latin"], weight: "500", style: "normal" });
 
@@ -25,15 +29,27 @@ interface userPageProps {
 }
 
 const Page = () => {
-  const firebaseApps = getApps();
-  const firebaseApp =
-    firebaseApps.length === 0 ? initializeApp(firebaseConfig) : firebaseApps[0];
-  if (
-    typeof window !== "undefined" &&
-    typeof window.navigator !== "undefined"
-  ) {
-    const messaging = getMessaging(firebaseApp);
-  }
+  initializingApp();
+
+  const appendMessage = (payload: MessagePayload) => {
+    return (
+      <div className="flex w-[500px] h-[300px]">
+        <Image alt="logo" src="/images/logo.png" />
+        <h5>Received message: {payload.notification?.title}</h5>
+        <span>{payload.notification?.body}</span>
+      </div>
+    );
+  };
+
+  useEffect(() => {
+    const messaging = getMessaging();
+
+    onMessage(messaging, (payload) => {
+      console.log("메세지 받음", payload);
+
+      appendMessage(payload);
+    });
+  }, []);
 
   const auth = getAuth();
 

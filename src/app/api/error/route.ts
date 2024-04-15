@@ -1,26 +1,12 @@
 import { db } from "@/libs/prisma/db";
 import { NextApiRequest, NextApiResponse } from "next";
 
-// 나중에 api 호출할 때 함께 전달할 데이터
-interface NotificationData {
-  data: {
-    // id: string;
-    uid: string;
-    // token: string;
-    content: string;
-    image: string;
-    time: string;
-  };
-}
-
 const admin = require("firebase-admin");
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
+export async function POST(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "POST") {
     const { message } = req.body;
+    console.log("message", message);
 
     const serviceAccount = require("/serviceAccountKey.json");
 
