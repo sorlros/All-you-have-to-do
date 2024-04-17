@@ -24,6 +24,7 @@ const firebaseApp = firebase.initializeApp({
 });
 
 const messaging = firebase.messaging(firebaseApp);
+// const messaging = getMessaging(firebaseApp);
 
   if (messaging.data) {
     console.log("데이터 전송", messaging.data)
@@ -72,6 +73,7 @@ self.addEventListener("notificationclick", function (event) {
 
 //   self.registration.showNotification(notificationTitle, notificationOptions);
 // });
+
 
 messaging.onBackgroundMessage(function(payload) {
   console.log("Received background message ", payload);

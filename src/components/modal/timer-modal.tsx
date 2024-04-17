@@ -25,19 +25,20 @@ import Image from "next/image";
 import useSendPush from "@/app/hooks/use-send-push";
 import { firebaseConfig } from "@/config/firebase-config";
 import { initializingApp } from "@/libs/initialize-app";
+import sendNotificationToBackend from "@/app/api/send-notification";
 interface NotificationData {
   data: {
-    uid: string;
+    // uid: string;
     title: string;
     body: string;
     image: string;
-    icon: string;
+    // icon: string;
     time: string;
   };
 }
 
 const TimerModal = () => {
-  initializingApp();
+  // initializingApp();
 
   const timerModal = useTimer();
   const isOpen = useTimer((state) => state.isOpen);
@@ -78,11 +79,11 @@ const TimerModal = () => {
       const { uid } = useTokenWithUidStore.getState();
 
       const data = {
-        uid,
+        // uid,
         title: "title",
         body: content,
         image: "/icon-192x192.png",
-        icon: "/icon-192x192.png",
+        // icon: "/icon-192x192.png",
         time: time,
       };
 
@@ -94,7 +95,8 @@ const TimerModal = () => {
       // onMessage(messaging, (message) => {
       //   console.log("asdasd", message);
       // });
-      await sendFCMNotification(data);
+      // await sendFCMNotification(data);
+      sendNotificationToBackend({ data, token });
 
       timerModal.onClose();
       toast.success("알람을 생성했습니다.");

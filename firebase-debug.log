@@ -1,0 +1,81 @@
+[debug] [2024-04-17T07:58:40.141Z] ----------------------------------------------------------------------
+[debug] [2024-04-17T07:58:40.142Z] Command:       /Users/choi/.nvm/versions/node/v18.17.0/bin/node /Users/choi/.nvm/versions/node/v18.17.0/bin/firebase deploy --only hosting
+[debug] [2024-04-17T07:58:40.142Z] CLI Version:   13.7.2
+[debug] [2024-04-17T07:58:40.142Z] Platform:      darwin
+[debug] [2024-04-17T07:58:40.142Z] Node Version:  v18.17.0
+[debug] [2024-04-17T07:58:40.153Z] Time:          Wed Apr 17 2024 16:58:40 GMT+0900 (GMT+09:00)
+[debug] [2024-04-17T07:58:40.153Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2024-04-17T07:58:40.186Z] Object ".hosting.headers[0]" in "firebase.json" has unknown property: {"additionalProperty":"source"}
+[debug] [2024-04-17T07:58:40.186Z] Field ".hosting.headers[0].headers[0].value" in "firebase.json" is possibly invalid: should be string
+[debug] [2024-04-17T07:58:40.186Z] Object ".hosting.headers[0]" in "firebase.json" has unknown property: {"additionalProperty":"source"}
+[debug] [2024-04-17T07:58:40.186Z] Field ".hosting.headers[0]" in "firebase.json" is possibly invalid: should match some schema in anyOf
+[debug] [2024-04-17T07:58:40.186Z] Field ".hosting" in "firebase.json" is possibly invalid: should be array
+[debug] [2024-04-17T07:58:40.186Z] Field ".hosting" in "firebase.json" is possibly invalid: should match some schema in anyOf
+[debug] [2024-04-17T07:58:40.188Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2024-04-17T07:58:40.188Z] > authorizing via signed-in user (sorlros2047@gmail.com)
+[debug] [2024-04-17T07:58:40.188Z] [iam] checking project all-you-have-to-do for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2024-04-17T07:58:40.189Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/all-you-have-to-do:testIamPermissions [none]
+[debug] [2024-04-17T07:58:40.189Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/all-you-have-to-do:testIamPermissions x-goog-quota-user=projects/all-you-have-to-do
+[debug] [2024-04-17T07:58:40.189Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/all-you-have-to-do:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2024-04-17T07:58:41.008Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/all-you-have-to-do:testIamPermissions 200
+[debug] [2024-04-17T07:58:41.008Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/all-you-have-to-do:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2024-04-17T07:58:41.009Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/all-you-have-to-do [none]
+[debug] [2024-04-17T07:58:41.421Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/all-you-have-to-do 200
+[debug] [2024-04-17T07:58:41.421Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/all-you-have-to-do {"projectId":"all-you-have-to-do","projectNumber":"28080972325","displayName":"All-you-have-to-do","name":"projects/all-you-have-to-do","resources":{"hostingSite":"all-you-have-to-do","storageBucket":"all-you-have-to-do.appspot.com","locationId":"asia-northeast3"},"state":"ACTIVE","etag":"1_17dd8cb8-f634-40a7-9c07-65d12ceee967"}
+[debug] [2024-04-17T07:58:42.717Z] defaultcredentials: writing to file /Users/choi/.config/firebase/sorlros2047_gmail_com_application_default_credentials.json
+[debug] [2024-04-17T07:58:42.720Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/all-you-have-to-do/sites pageToken=&pageSize=10
+[debug] [2024-04-17T07:58:43.675Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/all-you-have-to-do/sites 200
+[debug] [2024-04-17T07:58:43.675Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/all-you-have-to-do/sites {"sites":[{"name":"projects/all-you-have-to-do/sites/all-you-have-to-do","defaultUrl":"https://all-you-have-to-do.web.app","appId":"1:28080972325:web:2968ca49bf317747a195cc","type":"DEFAULT_SITE"}]}
+[debug] [2024-04-17T07:58:43.676Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/-/webApps/1:28080972325:web:2968ca49bf317747a195cc/config [none]
+[debug] [2024-04-17T07:58:44.808Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/-/webApps/1:28080972325:web:2968ca49bf317747a195cc/config 200
+[debug] [2024-04-17T07:58:44.808Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/-/webApps/1:28080972325:web:2968ca49bf317747a195cc/config {"projectId":"all-you-have-to-do","appId":"1:28080972325:web:2968ca49bf317747a195cc","storageBucket":"all-you-have-to-do.appspot.com","locationId":"asia-northeast3","apiKey":"AIzaSyCJKwwt37N2WbUfvQb2-Hu-OcbNoDAmtB0","authDomain":"all-you-have-to-do.firebaseapp.com","messagingSenderId":"28080972325"}
+[info] 
+   Thank you for trying our early preview of Next.js support on Firebase Hosting.
+   During the preview, support is best-effort and breaking changes can be expected. Proceed with caution.
+   The integration is known to work with Next.js version 12 - 14.0. You may encounter errors.
+
+   Documentation: https://firebase.google.com/docs/hosting/frameworks/nextjs
+   File a bug: https://github.com/firebase/firebase-tools/issues/new?template=bug_report.md
+   Submit a feature request: https://github.com/firebase/firebase-tools/issues/new?template=feature_request.md
+
+   We'd love to learn from you. Express your interest in helping us shape the future of Firebase Hosting: https://goo.gle/41enW5X
+
+[debug] [2024-04-17T07:58:47.098Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/all-you-have-to-do/sites/all-you-have-to-do [none]
+[debug] [2024-04-17T07:58:47.995Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/all-you-have-to-do/sites/all-you-have-to-do 200
+[debug] [2024-04-17T07:58:47.995Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/all-you-have-to-do/sites/all-you-have-to-do {"name":"projects/all-you-have-to-do/sites/all-you-have-to-do","defaultUrl":"https://all-you-have-to-do.web.app","appId":"1:28080972325:web:2968ca49bf317747a195cc","type":"DEFAULT_SITE"}
+[info]    ▲ Next.js 14.1.0
+
+[info]    - Environments: .env
+
+
+[info]    Creating an optimized production build ...
+
+[info] > [PWA] Compile server
+
+[info] > [PWA] Compile server
+
+[info] > [PWA] Compile client (static)
+
+[info] > [PWA] Auto register service worker with: /Users/choi/Desktop/React/portfolio/all-you-have-to-do/node_modules/next-pwa/register.js
+
+[info] > [PWA] Service worker: /Users/choi/Desktop/React/portfolio/all-you-have-to-do/public/sw.js
+
+[info] > [PWA]   url: /sw.js
+> [PWA]   scope: /
+
+[info]  ✓ Compiled successfully
+
+[info]    Linting and checking validity of types ...
+
+[info] Failed to compile.
+
+src/app/api/error/route.ts
+Type error: Route "src/app/api/error/route.ts" has an invalid "POST" export:
+  Type "NextApiRequest" is not a valid type for the function's first argument.
+    Expected "Request | NextRequest", got "NextApiRequest".
+
+
+[debug] [2024-04-17T07:59:10.383Z] Error: ENOENT: no such file or directory, open '/Users/choi/Desktop/React/portfolio/all-you-have-to-do/.next/export-marker.json'
+[error] 
+[error] Error: An unexpected error has occurred.
